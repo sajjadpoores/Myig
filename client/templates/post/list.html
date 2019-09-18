@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block title %}
+    لیست پست زماندار
+{% endblock %}
+{% load tags %}
+{% block main %}
+<div class="main-content">
+    <div class="section__content section__content--p30">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="overview-wrap">
+                        <h2 class="title-5">مدیریت فایل ها</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="card sendcontentlist">
+                    <div class="contentposts">
+                        <table>
+                            <tr>
+                                <th>عملیات</th>
+                                <th>فایل</th>
+                                <th>سایز</th>
+                                <th>یوزر</th>
+                                <th>نوع</th>
+                                <th>زمان آپلود</th>
+                                <th>زمان ارسال</th>
+                                <th>وضعیت ارسال</th>
+                            </tr>
+                            {% for post in posts %}
+                                <tr>
+                                    <td>
+                                        <button type="button" class="btn btn-danger btn-block" onclick="window.location.href='/client/{{ post.user.cid.id }}/post/{{ post.id }}/delete/';">
+                                            <span class="fa fa-trash"></span>
+                                            حذف
+                                        </button>
+                                    </td>
+                                    <td>
+                                    {% if post.photo %}
+                                        <img src="{{post.photo.url}}" alt="">
+                                    {% elif post.video %}
+                                        TODO: CHANGE THE LIST.HTML TEMPLATE!
+                                    {% endif %}
+                                    </td>
+                                    <td>
+                                        {{ post.photo.size|get_size }}
+                                    </td>
+                                    <td>
+                                        {{ post.user.username }}
+                                    </td>
+                                    <td>
+                                        {% if post.mode == 0 %}استوری {% else %}پست{% endif %}
+                                    </td>
+                                    <td>
+                                        {{ post.uploaded_at|to_jdatetime }}
+                                    </td>
+                                    <td>
+                                        {{ post.post_at|to_jdatetime }}
+                                    </td>
+                                    <td>
+                                        {% if post.sent %} ارسال شده
+                                        {% else %} ارسال نشده
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    </div>
+    <!-- END MAIN CONTENT-->
+    <!-- END PAGE CONTAINER-->
+    <footer class="settingfooter">
+    <p>کپی رایت © نرم افزار ربات تبلیغات اینستاگرام. تمامی حقوق طراحی و ایده ها محفوظ و هرگونه کپی برداری پیگرد قانونی دارد.</p>
+    </footer>
+{% endblock %}

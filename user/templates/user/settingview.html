@@ -1,0 +1,39 @@
+فالو:
+{{ user.setting.flwFlg }}
+<br>
+فالو بر ساعت:
+{{ user.setting.flwPerHour }}
+<br>
+حدود فالووینگ صفحات:
+{{ user.setting.follow.flwing.0 }} - {{ user.setting.follow.flwing.1 }}
+<br>
+حدود فالوور صفحات:
+{{ user.setting.follow.flwers.0 }} - {{ user.setting.follow.flwers.1 }}
+<br>
+حدود تعداد پست ها:
+{{ user.setting.follow.posts.0 }} - {{ user.setting.follow.posts.1 }}
+<br>
+منبع فالو:
+{{ user.setting.follow.mode }}
+<br>
+دوبار فالو نکن:
+{{ user.setting.follow.tryAgain }}
+<br>
+صفحات بیزینس را فالو کن:
+{{ user.setting.follow.flwBusiness }}
+<br>
+صفحات بدون عکس را فالو نکن:
+{{ user.setting.follow.hasPic }}
+<br>
+صفحات پابلیک را فالو کن:
+{{ user.setting.follow.flwPublic }}
+<br>
+صفحات پرایوت را فالو کن:
+{{ user.setting.follow.flwPrivate }}
+<br>
+کاربران هدف:
+<select>
+    {% for target in user.setting.targets %}
+        <option>{{ target }}</option>
+    {% endfor %}
+</select>

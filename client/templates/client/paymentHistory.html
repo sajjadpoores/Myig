@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% load tags %}
+
+{% block title %}
+    سوابق پرداخت
+{% endblock %}
+
+{% block main %}
+<div class="main-content">
+    <div class="section__content section__content--p30">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="overview-wrap">
+                        <h2 class="title-5">سوابق پرداخت</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="card sentticket">
+                    <table>
+                        <tr>
+                            <th>شماره</th>
+                            <th>پلن</th>
+                            <th>کاربر</th>
+                            <th>یوزر های اینستاگرام</th>
+                            <th>مبلغ</th>
+                            <th>تاریخ</th>
+                        </tr>
+                        {% for payment in payments %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ payment.pid.name }}</td>
+                                <td>{{ payment.cid.username }}</td>
+                                <td>
+                                    {% for item in payment.items.list %}
+                                        {{ item.user.username }}<br>
+                                    {% endfor %}
+                                </td>
+                                <td>{{ payment.amount }} تومان</td>
+                                {% if payment.done %}
+                                    <td>{{ payment.time|to_jdatetime }}</td>
+                                {% else %}
+                                    <td>پرداخت ناموفق</td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    </table>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END MAIN CONTENT-->
+<!-- END PAGE CONTAINER-->
+<footer class="settingfooter">
+    <p>کپی رایت © نرم افزار ربات تبلیغات اینستاگرام. تمامی حقوق طراحی و ایده ها محفوظ و هرگونه کپی برداری پیگرد قانونی دارد.</p>
+</footer>
+{% endblock %}

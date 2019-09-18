@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    گزارش گیری و آمار
+{% endblock %}
+
+{% block link %}
+    <style>
+        .accpart button{
+            font-size: 13px;
+        }
+        .accpart button span{
+            padding: 0;
+        }
+    </style>
+
+    <script>
+        function get_instagram_users_info(username){
+            const Http = new XMLHttpRequest();
+            var url = 'https://instagram.com/' + username;
+            Http.open("GET", url);
+            Http.send();
+            Http.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+
+                    var f = this.response.indexOf('window._sharedData = ');
+                    if(f!=-1){
+                        f += 21;
+                        var output = this.response.substr(f, this.response.indexOf("<\/script>", f) - f - 1);
+                        output = JSON.parse(output);
+                        output = output.entry_data.ProfilePage[0].graphql.user;
+
+                        var pic_url = output.profile_pic_url;
+                        var followers = output.edge_followed_by.count;
+                        var followings = output.edge_follow.count;
+
+                        document.getElementById("pic" + username).src = pic_url;
+                        document.getElementById("followers" + username).innerHTML = followers;
+                        document.getElementById("followings" + username).innerHTML = followings;
+                        var user_link = document.getElementById("link" + username);
+                        user_link.innerHTML = username;
+                        user_link.href = "http://instagram.com/" + username;
+                    }
+                }
+            }
+        }
+    </script>
+{% endblock %}
+
+{% block main %}
+<div class="main-content">
+    <div class="section__content section__content--p30">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="overview-wrap">
+                        <h2 class="title-5">گزارش گیری و آمار<span>لیست اکانت ها</span></h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="row">
+                    {% for user in users %}
+                        <div class="col-lg-4">
+                            <script>get_instagram_users_info("{{ user.username }}");</script>
+                            <div class="card acccard">
+                                <div class="accpart">
+                                    <div class="row2">
+                                        <img id="pic{{ user.username }}" src="" alt="" class="prof">
+                                        <div class="profname">
+                                            <p id="link{{ user.username }}">{{ user.username }}</p>
+                                            <span><img src="{% static 'images/icon/instamini.png' %}" alt="">{{ client.username }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="accpart">
+                                    <div class="row">
+
+                                        <div class="col-md-6">
+                                            <p>Followers</p>
+                                            <p id="followers{{ user.username }}"> Loading...</p>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p>Following</p>
+                                            <p id="followings{{ user.username }}"> Loading... </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="accpart">
+                                    <div class="row">
+
+                                        <div class="col-md-12">
+                                            <button type="button" class="btn btn-danger btn-block" onclick="window.location.href='/user/{{ user.uid }}/chart/';">
+                                                <span class="fas fa-chart-bar"></span>
+                                                آمار فعالیت و نمودار ماهانه
+                                            </button>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <button type="button" class="btn btn-primary btn-block" onclick="window.location.href='/user/{{ user.uid }}/activity/';">
+                                                <span class="fas fa-hourglass-half"></span>
+                                                گزارش فعالیت زنده ربات
+                                            </button>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <button type="button" class="btn btn-success btn-block" onclick="window.location.href='/user/{{ user.uid }}/efficiency/';">
+                                                <span class="fas fa-magnet"></span>
+                                                بازدهی اهداف مورد فعالیت ربات
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    {% endfor %}
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END MAIN CONTENT-->
+<!-- END PAGE CONTAINER-->
+<footer class="settingfooter">
+    <p>کپی رایت © نرم افزار ربات تبلیغات اینستاگرام. تمامی حقوق طراحی و ایده ها محفوظ و هرگونه کپی برداری پیگرد قانونی دارد.</p>
+</footer>
+{% endblock %}

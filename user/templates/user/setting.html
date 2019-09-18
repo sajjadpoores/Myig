@@ -1,0 +1,1499 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load tags %}
+
+{% block title %}
+    settings
+{% endblock %}
+
+{% block script %}
+    <script>
+        function countDown(seconds, elementID){
+            s = seconds % 60;
+            m = Math.floor(seconds / 60);
+            h = Math.floor(m / 60);
+            m = m % 60;
+            d = Math.floor(h / 24);
+            h = h % 24;
+            document.getElementById(elementID).innerHTML = d + " روز و " + h + " ساعت و " + m + " دقیقه و " + s + " ثانیه";
+        }
+
+            var status = {{ instagramUser.status}};
+            var s0 = {{ instagramUser.charge }};
+            setInterval(function(){
+                countDown(s0, 'userCharge0');
+                if (s0 > 0 && status == 0)
+                    s0--;
+                }, 1000)
+
+        function gatherInfo(){
+
+            flwPerHour = document.getElementsByName('flwPerHour')[0];
+            flwPerHour.removeAttribute('disabled');
+
+            unflwPerHour = document.getElementsByName('unflwPerHour')[0];
+            unflwPerHour.removeAttribute('disabled');
+
+            likePerHour = document.getElementsByName('likePerHour')[0];
+            likePerHour.removeAttribute('disabled');
+
+            commentPerHour = document.getElementsByName('commentPerHour')[0];
+            commentPerHour.removeAttribute('disabled');
+
+            directPerHour = document.getElementsByName('directPerHour')[0];
+            directPerHour.removeAttribute('disabled');
+
+            commentsLikePerHour = document.getElementsByName('commentsLikePerHour')[0];
+            commentsLikePerHour.removeAttribute('disabled');
+
+            form = document.getElementById('mainForm');
+
+            var followMode = document.getElementsByName('followMode')[0].selectedIndex;
+            var likeMode = document.getElementsByName('likeMode')[0].selectedIndex;
+            var commentslikeMode = document.getElementsByName('commentslikeMode')[0].selectedIndex;
+
+            var t = document.getElementsByClassName('tag_text');
+            var tag_length = t.length;
+            for(var i=0; i<t.length; ++i){
+                var input = document.createElement("input");
+                input.setAttribute("type", "hidden");
+                input.setAttribute("name", "tags[]");
+                input.setAttribute("value", t[i].innerHTML);
+                form.appendChild(input);
+            }
+
+            t = document.getElementsByClassName('tag_text');
+            for(var i=0; i<t.length; ++i){
+                var input = document.createElement("input");
+                input.setAttribute("type", "hidden");
+                input.setAttribute("name", "pktags[]");
+                input.setAttribute("value", t[i].innerHTML);
+                form.appendChild(input);
+            }
+
+            t = document.getElementsByClassName('location_text');
+            for(var i=0; i<t.length; ++i){
+                var input = document.createElement("input");
+                input.setAttribute("type", "hidden");
+                input.setAttribute("name", "locations[]");
+                input.setAttribute("value", t[i].innerHTML);
+                form.appendChild(input);
+            }
+
+            t = document.getElementsByClassName('pklocation_text');
+            for(var i=0; i<t.length; ++i){
+                var input = document.createElement("input");
+                input.setAttribute("type", "hidden");
+                input.setAttribute("name", "pklocations[]");
+                input.setAttribute("value", t[i].innerHTML);
+                form.appendChild(input);
+            }
+            var tag_location_needed = followMode == 2 || likeMode == 2 || commentslikeMode == 2;
+            if (tag_length == 0 && t.length == 0 && tag_location_needed){
+                alert('لطفا تعدادی تگ و موقعیت جغرافیایی وارد نمایید و یا تنظیمات فیلتر ها را تغییر دهید.');
+                return false;
+            }
+            t = document.getElementsByClassName('username_text');
+            for(var i=0; i<t.length; ++i){
+                var input = document.createElement("input");
+                input.setAttribute("type", "hidden");
+                input.setAttribute("name", "usernames[]");
+                input.setAttribute("value", t[i].innerHTML);
+                form.appendChild(input);
+            }
+
+            t = document.getElementsByClassName('userid_text');
+            for(var i=0; i<t.length; ++i){
+                var input = document.createElement("input");
+                input.setAttribute("type", "hidden");
+                input.setAttribute("name", "userids[]");
+                input.setAttribute("value", t[i].innerHTML);
+                form.appendChild(input);
+            }
+
+            var target_needed = followMode == 0 || followMode == 1 || likeMode == 0 || likeMode == 1 || commentslikeMode == 0 || commentslikeMode == 1;
+            if (target_needed && t.length == 0){
+                alert('لطفا از بخش تنظیمات کاربران نسبت به اضافه نمودن کاربر هدف اقدام نمایید و یا تنظیمات فیلتر ها را تغییر دهید.');
+                return false;
+            }
+
+            var sendDirectToAll = document.getElementById('do7').checked;
+            if (t.length == 0 && !sendDirectToAll){
+                alert('لطفا از بخش تنظیمات کاربران نسبت به اضافه نمودن کاربر هدف اقدام نمایید و یا گزینه ارسال دایرکت به همه کاربران هدف را غیر فعال نمایید.');
+                return false;
+            }
+
+            t = document.getElementsByClassName('whitelistid_text');
+            for(var i=0; i<t.length; ++i){
+                var input = document.createElement("input");
+                input.setAttribute("type", "hidden");
+                input.setAttribute("name", "whitelistId[]");
+                input.setAttribute("value", t[i].innerHTML);
+                form.appendChild(input);
+            }
+
+            t = document.getElementsByClassName('whitelistusername_text');
+            for(var i=0; i<t.length; ++i){
+                var input = document.createElement("input");
+                input.setAttribute("type", "hidden");
+                input.setAttribute("name", "whitelistUsername[]");
+                input.setAttribute("value", t[i].innerHTML);
+                form.appendChild(input);
+            }
+
+            t = document.getElementsByClassName('userTargetid_text');
+            for(var i=0; i<t.length; ++i){
+                var input = document.createElement("input");
+                input.setAttribute("type", "hidden");
+                input.setAttribute("name", "userTargetid[]");
+                input.setAttribute("value", t[i].innerHTML);
+                form.appendChild(input);
+            }
+
+            t = document.getElementsByClassName('userTargetname_text');
+            for(var i=0; i<t.length; ++i){
+                var input = document.createElement("input");
+                input.setAttribute("type", "hidden");
+                input.setAttribute("name", "userTargetname[]");
+                input.setAttribute("value", t[i].innerHTML);
+                form.appendChild(input);
+            }
+
+            t = document.getElementsByClassName('comment_text');
+            for(var i=0; i<t.length; ++i){
+                var input = document.createElement("input");
+                input.setAttribute("type", "hidden");
+                input.setAttribute("name", "comments[]");
+                input.setAttribute("value", t[i].innerHTML);
+                form.appendChild(input);
+            }
+            var commentFlag = document.getElementById('robotdo1');
+            if (commentFlag.checked && t.length == 0)
+                commentFlag.checked = false;
+
+            t = document.getElementsByClassName('direct_text');
+            for(var i=0; i<t.length; ++i){
+                var input = document.createElement("input");
+                input.setAttribute("type", "hidden");
+                input.setAttribute("name", "directs[]");
+                input.setAttribute("value", t[i].innerHTML);
+                form.appendChild(input);
+            }
+            var directFlag = document.getElementById('robotdo6');
+            if (directFlag.checked && t.length == 0)
+                directFlag.checked = false;
+
+            var directSendToAll = document.getElementsByName('directSendToAll')[0];
+            if (directSendToAll.checked)
+                directFlag.checked = true;
+
+            var followPrivateFlag = document.getElementsByName('followPrivate')[0];
+            var followPublicFlag = document.getElementsByName('followPublic')[0];
+
+            if (!(followPrivateFlag.checked || followPublicFlag.checked)){
+                alert('حداقل یکی از کابران پابلیک یا کاربران پرایوت را فالو کن را فعال نمایید.');
+                return false;
+            }
+
+        }
+
+        function enableDisable(select){
+
+            flwPerHour = document.getElementsByName('flwPerHour')[0];
+            unflwPerHour = document.getElementsByName('unflwPerHour')[0];
+            likePerHour = document.getElementsByName('likePerHour')[0];
+            commentPerHour = document.getElementsByName('commentPerHour')[0];
+            directPerHour = document.getElementsByName('directPerHour')[0];
+            commentsLikePerHour = document.getElementsByName('commentsLikePerHour')[0];
+
+            if (select.options[select.selectedIndex].value == '0'){
+                flwPerHour.removeAttribute('disabled');
+                unflwPerHour.removeAttribute('disabled');
+                likePerHour.removeAttribute('disabled');
+                commentPerHour.removeAttribute('disabled');
+                directPerHour.removeAttribute('disabled');
+                commentsLikePerHour.removeAttribute('disabled');
+            }
+            else{
+                flwPerHour.disabled = true;
+                unflwPerHour.disabled = true;
+                likePerHour.disabled = true;
+                commentPerHour.disabled = true;
+                directPerHour.disabled = true;
+                commentsLikePerHour.disabled = true;
+            }
+
+
+            if (select.options[select.selectedIndex].value == '1'){
+                flwPerHour.value = 14;
+                unflwPerHour.value = 14;
+                likePerHour.value = 20;
+                commentPerHour.value = 5;
+                directPerHour.value = 1;
+                commentsLikePerHour.value = 5;
+            }
+            else if (select.options[select.selectedIndex].value == '2'){
+                flwPerHour.value = 20;
+                unflwPerHour.value = 20;
+                likePerHour.value = 30;
+                commentPerHour.value = 8;
+                directPerHour.value = 2;
+                commentsLikePerHour.value = 7;
+            }
+            else if (select.options[select.selectedIndex].value == '3'){
+                flwPerHour.value = 26;
+                unflwPerHour.value = 26;
+                likePerHour.value = 40;
+                commentPerHour.value = 10;
+                directPerHour.value = 3;
+                commentsLikePerHour.value = 10;
+            }
+        }
+
+        function deleteItem(parentNode){
+            parentNode.parentNode.removeChild(parentNode);
+        }
+
+
+        function is_item_exists(a, b){
+            for(var i=0; i<b.length; ++i){
+                if (a == b[i].innerHTML)
+                    return true;
+
+            }
+            return false;
+        }
+
+        function addTag(){
+            tagArea = document.getElementById('addTagArea');
+            var text = tagArea.value;
+            var tags = [];
+            var tag = "";
+
+            for(var i=0; i<text.length; ++i){
+                if((text[i] >= 'a' && text[i] <= 'z') || (text[i] >= 'A' && text[i] <= 'Z') || (text[i] >= '0' && text[i] <= '9') || text[i] == 'ئ' || text[i] == 'آ' || text[i] == '_' || (text[i] >= 'ا' && text[i] <= 'ی'))
+                    tag += text[i];
+                else{
+                    tags.push(tag);
+                    tag = ""
+                }
+            }
+            if (tag != "")
+                tags.push(tag);
+
+
+            addTagHere = document.getElementById('addTagHere');
+            addTagBeforeThis = document.getElementById('addTagBeforeThis');
+            var alreadyAddedTags = document.getElementsByClassName('tag_text');
+            for(var i=0; i< tags.length; ++i){
+                if (is_item_exists(tags[i], alreadyAddedTags))
+                    continue;
+                var div = document.createElement('div');
+                div.setAttribute('class', 'btn-group');
+                div.innerHTML = `<button type="button" class="btn btn-info" onclick="deleteItem(this.parentNode)"> <span class="fas fa-times"></span>
+                    </button><button type="button" class="btn btn-default  ng-binding"><span class="fas fa-hashtag"></span>
+                    <span class='tag_text'>` + tags[i] + `</span></button><span class="pktag_text" style="display:none;">` + tags[i] + `‍</span>`;
+                addTagHere.insertBefore(div, addTagBeforeThis);
+            }
+            offscrl1();
+        }
+
+        function addComment(){
+            commentArea = document.getElementById('commentArea');
+            var text = commentArea.value;
+            comments = text.split(/\r\n|\r|\n/g);
+
+            addCommentHere = document.getElementById('addCommentHere');
+            addTagCommentThis = document.getElementById('addCommentBeforeThis');
+            var alreadyAddedComments = document.getElementsByClassName('comment_text');
+            for(var i=0; i< comments.length; ++i){
+                if (is_item_exists(comments[i], alreadyAddedComments))
+                    continue;
+                var div = document.createElement('div');
+                div.setAttribute('class', 'btn-group');
+                div.innerHTML = `<button type="button" class="btn btn-info" onclick="deleteItem(this.parentNode)"><span class="fas fa-times"></span></button>
+                    <button type="button" class="btn btn-default  ng-binding"><span class="fas fa-comment"></span> <span class="comment_text">` + comments[i] + `</span></button>`
+                addCommentHere.insertBefore(div, addCommentBeforeThis);
+            }
+            offscrl4();
+        }
+
+        function addDirect(){
+            directArea = document.getElementById('directArea');
+            var text = directArea.value;
+            directs = text.split(/\r\n|\r|\n/g);
+
+            var addDirectHere = document.getElementById('addDirectHere');
+            var addTagDirectThis = document.getElementById('addCommentBeforeThis');
+
+            var alreadyAddedDirects = document.getElementsByClassName('direct_text');
+            for(var i=0; i< directs.length; ++i){
+                if (is_item_exists(directs[i], alreadyAddedDirects))
+                    continue;
+                var div = document.createElement('div');
+                div.setAttribute('class', 'btn-group');
+                div.innerHTML = `<button type="button" class="btn btn-info" onclick="deleteItem(this.parentNode)"><span class="fas fa-times"></span></button>
+                                 <button type="button" class="btn btn-default  ng-binding"><span class="fas fa-envelope"></span> <span class="direct_text">` + directs[i] + `</span>
+                                 </button>`
+                addDirectHere.insertBefore(div, addDirectBeforeThis);
+            }
+            offscrl5();
+        }
+
+        function startUser(uid, button, statush5Id){
+		    parentNode = button.parentNode;
+            statush5 = document.getElementById(statush5Id);
+			const Http = new XMLHttpRequest();
+			var url;
+			if(parentNode.id == 'on1'){
+				url = '/user/' + uid + '/start/';
+			}
+			else if(parentNode.id == 'off1'){
+				url = '/user/' + uid + '/stop/';
+			}
+
+			Http.open("GET", url);
+			Http.send();
+			Http.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+
+                    if(parentNode.id == 'on1'){
+                        button.innerHTML = 'خاموش کن';
+                        parentNode.id = 'off1';
+                        statush5.innerHTML = 'انتظار برای شروع';
+                    }
+                    else if(parentNode.id == 'off1'){
+                        button.innerHTML = 'روشن کن';
+                        parentNode.id = 'on1';
+                        statush5.innerHTML = 'خاموش';
+                        status = 100; // turn off counter
+                    }
+                 }
+			}
+        }
+
+        function show_followers(followers){
+            if (followers <= 999)
+                return followers;
+            else if (1000 <= followers && followers <= 999999)
+                return (followers/1000).toFixed(2) + ' K';
+            else if (1000000 <= followers)
+                return (followers/1000000).toFixed(2) + ' M';
+
+        }
+
+        function search_user(search_string_id='addTargetArea', add_users_here_id='addUsersHere', label_class='addedUsers'){
+            var search_string = document.getElementById(search_string_id).value;
+            addUsersHere = document.getElementById(add_users_here_id);
+            while (addUsersHere.firstChild) {
+                addUsersHere.removeChild(addUsersHere.firstChild);
+            }
+
+            var url = '/user/{{ instagramUser.uid }}/finduser/' + search_string + '/';
+            const Http = new XMLHttpRequest();
+            Http.open("GET", url);
+			Http.send();
+			Http.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    users = JSON.parse(this.responseText);
+                    if(users.error){
+                        alert(users.error);
+                    }
+                    for(var i=0; i<users.length; ++i){
+                        var span = document.createElement('span');
+                        span.innerHTML = '<label class="' + label_class + '"><input type="checkbox" name="' + users[i].userId + '"><img src="' + users[i].pic_url + '" alt="">' + users[i].username + '<span>('+ show_followers(users[i].followers) + ')</span></label>';
+                        addUsersHere.appendChild(span);
+                    }
+                }
+            }
+        }
+
+        function add_users(addedUsersId='addedUsers', addTargetUsersBeforeThisId='addTargetUsersBeforeThis', addTargetUsersHereId='addTargetUsersHere', userid_class = 'userid_text', username_class='username_text'){
+            var user_lables = document.getElementsByClassName(addedUsersId);
+            var addTargetUsersBeforeThis = document.getElementById(addTargetUsersBeforeThisId);
+            var addTargetUsersHere = document.getElementById(addTargetUsersHereId);
+
+            var alreadyAddedUsers = document.getElementsByClassName(userid_class);
+            for (var i=0; i<user_lables.length; ++i){
+                if (user_lables[i].childNodes[0].checked && !is_item_exists(user_lables[i].childNodes[0].name, alreadyAddedUsers)){
+                    user_lables[i].childNodes[0].checked = false;
+                    var div = document.createElement('div');
+                    div.setAttribute('class', 'btn-group');
+                    div.innerHTML = `
+                        <button type="button" class="btn btn-info" onclick="deleteItem(this.parentNode)"><span class="fas fa-times"></span></button>
+                        <button type="button" class="btn btn-default  ng-binding"><span class="fas "></span> <span class="` + username_class + `">` + user_lables[i].childNodes[2].data + `</span></button>
+                        <span class="` + userid_class + `" style="display:none;">` + user_lables[i].childNodes[0].name + `</span>`;
+                    addTargetUsersHere.insertBefore(div, addTargetUsersBeforeThis);
+                }
+            }
+            offscrl3();
+            offscrl7();
+        }
+
+        function enter_call_function(e, i, f){
+             if(e.keyCode == 13)
+                f();
+        }
+
+        function search_location(){
+            var search_string = document.getElementById('addLocationArea').value;
+            addLocationsHere = document.getElementById('addLocationsHere');
+            while (addLocationsHere.firstChild) {
+                addLocationsHere.removeChild(addLocationsHere.firstChild);
+            }
+
+            var url = '/user/{{ instagramUser.uid }}/findlocation/' + search_string + '/';
+            const Http = new XMLHttpRequest();
+            Http.open("GET", url);
+			Http.send();
+			Http.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    locations = JSON.parse(this.responseText);
+                    if(locations.error){
+                        alert(locations.error);
+                    }
+                    for(var i=0; i<locations.length; ++i){
+                        if (locations[i].locationId == 0)
+                            continue;
+                        var span = document.createElement('span');
+                        span.innerHTML = `<label class="addedLocations" ><input type="checkbox" name="` + locations[i].locationId + `">` + locations[i].name + `</label>`;
+                        addLocationsHere.appendChild(span);
+                    }
+                }
+            }
+        }
+
+        function add_locations(){
+            var location_lables = document.getElementsByClassName('addedLocations');
+            var addTargetLocationsBeforeThis = document.getElementById('addTargetLocationsBeforeThis');
+            var addTargetLocationsHere = document.getElementById('addTargetLocationsHere');
+
+            var alreadAddedLocations = document.getElementsByClassName('pklocation_text');
+            for (var i=0; i<location_lables.length; ++i){
+                if (location_lables[i].childNodes[0].checked && !is_item_exists(location_lables[i].childNodes[0].name, alreadAddedLocations)){
+                    var div = document.createElement('div');
+                    div.setAttribute('class', 'btn-group');
+                    div.innerHTML = `
+                        <button type="button" class="btn btn-info" onclick="deleteItem(this.parentNode)"><span class="fas fa-times"></span></button>
+                        <button type="button" class="btn btn-default  ng-binding"><span class="fas fa-map-marker"></span>
+                        <span class="location_text">` + location_lables[i].childNodes[1].data + `</span></button>
+                        <span class="pklocation_text" style="display:none;">` + location_lables[i].childNodes[0].name + `</span>`;
+                    addTargetLocationsHere.insertBefore(div, addTargetLocationsBeforeThis);
+                }
+            }
+            offscrl2();
+        }
+        enableDisable(document.getElementsByName('speed')[0]);
+
+        function send_direct_to_all(checkbox){
+            if (checkbox.checked){
+                var directPerHour = document.getElementsByName('directPerHour')[0];
+                directPerHour.value = 60;
+
+                var directFlag = document.getElementsByName('directFlag')[0];
+                directFlag.checked = true;
+            }
+            else
+                enableDisable(document.getElementsByName('speed')[0]);
+        }
+        send_direct_to_all(document.getElementById('do7'));
+
+        function copy_caption(checkbox){
+
+            var default_caption = document.getElementById('defaultCaptionDiv');
+            var default_caption_textarea = document.getElementById('do10');
+
+            if(checkbox.checked){
+                default_caption.style.display = 'none';
+                default_caption_textarea.innerHTML = '';
+            }
+            else
+                default_caption.style.display = 'block';
+        }
+
+        function copy_posts(checkbox){
+            var copy_caption_div = document.getElementById('copyCaptionDiv');
+            var copy_caption_checkbox = document.getElementById('do9');
+
+            if(checkbox.checked){
+                copy_caption_div.style.display = 'block';
+                copy_caption(document.getElementById('do9'));
+            }
+            else{
+                copy_caption_checkbox.checked = true;
+                copy_caption_div.style.display = 'none';
+
+                var default_caption = document.getElementById('defaultCaptionDiv');
+                var default_caption_textarea = document.getElementById('do10');
+
+                default_caption.style.display = 'none';
+                default_caption_textarea.innerHTML = '';
+            }
+
+        }
+        copy_posts(document.getElementById('do8'));
+        copy_caption(document.getElementById('do9'));
+    </script>
+{% endblock %}
+{% block main %}
+    <div class="popup" id="all1">
+        <div class="modal1 animation">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="offscrl1();"><span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title">تگ های جدید</h4>
+                </div>
+                <form ng-submit="addComments()" class="ng-valid ng-dirty ng-valid-parse">
+                    <div class="modal-body">
+                        <p>تگ ها را پشت سر هم با فاصله یا خط به خط جدا کنید</p>
+                        <div class="alert alert-danger alert-dismissible" role="alert">
+                            <strong>توجه !</strong>
+                            <h5>حتما از تگ های فارسی یا فینگیلیش استفاده کنید تا برای کاربران خارجی کامنت/لایک فارسی نگذارید.</h5>
+                            <h5>از استفاده از تگ های انگلیسی/عربی که باعث دریافت گزارش اسپم روی اکانت شما می شوند بپرهیزید.</h5>
+                        </div>
+                        <label>تگ ها</label>
+                        <textarea class="form-control ng-valid ng-empty ng-dirty ng-valid-parse ng-touched" ng-model="addCommentsData" id="addTagArea"></textarea>
+                    </div>
+
+
+                </form>
+                <button type="button" class="btn btn-primary addcmnt" onclick="addTag()">
+                    اضافه کن
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="popup" id="all2">
+        <div class="modal1 animation">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="offscrl2();"><span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title">موقعیت های جغرافیایی جدید</h4>
+                </div>
+                <div class="modal-body">
+                    <p>سعی کنید موقعیت های جغرافیایی پر مطلب را انتخاب کنید.</p>
+                    <div class="alert alert-danger alert-dismissible" role="alert">
+                        <strong>توجه !</strong>
+                        <h5>از استفاده از مکان های جغرافیایی غیر فارسی زبان بپرهیزید، چرا که با ارسال کامنت فارسی برای این مکان ها گزارش اسپم بر روی اکانتتان ارسال خواهد شد.</h5>
+                    </div>
+                    <div class="alert alert-info" role="alert">
+                        <strong>توجه !</strong>
+                        <h5>لطفا توجه بفرمایید موقعیت های جغرافیایی به صورت جداگانه از تگ ها بررسی می شوند ( ربات ممکن است در موقعیت جغرافیایی پستی را انتخاب کند که شامل تگ های شما نباشد )</h5>
+                    </div>
+                    <label>نام مکان</label>
+                    <input type="text" id="addLocationArea" class="form-control" placeholder="تهران" onkeydown="enter_call_function(event,this, search_location);"><button class="btn btn-success" onclick="search_location()">جستجو</button>
+                    <div class="showAddLocationArea" id="addLocationsHere">
+
+                    </div>
+                </div>
+
+                <button type="button" class="btn btn-primary addcmnt" onclick="add_locations()">
+                    اضافه کن
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="popup" id="all3">
+        <div class="modal1 animation">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="offscrl3();"><span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title">اضافه کردن کاربر هدف جدید</h4>
+                </div>
+
+                <div class="modal-body">
+                    <p>سعی کنید کاربرانی با بیش از ده هزار فالوور و هم موضوع با صفحه خودتان را انتخاب کنید.</p>
+                    <div class="alert alert-warning" role="alert">
+                        <strong>توجه !</strong>
+                        <h5>بهتر است قبل از اضافه کردن کاربر هدف جدید از واقعی بودن ( فیک نبودن ) فالوور های آنها با چک کردن لیست فالوور ها در برنامه اینستاگرام اطمینان حاصل کنید.</h5>
+                    </div>
+                    <label>نام کاربری</label>
+                    <input type="text" id="addTargetArea" class="form-control" onkeydown="enter_call_function(event,this, search_user);"><button class="btn btn-success" onclick="search_user()">جستجو</button>
+                    <div class="showAddTargetArea" id="addUsersHere">
+
+                    </div>
+                </div>
+
+                <button type="button" class="btn btn-primary addcmnt" onclick="add_users()">
+                    اضافه کن
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="popup" id="all4">
+        <div class="modal1 animation">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="offscrl4();"><span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title">قالب کامنت جدید</h4>
+                </div>
+                <form ng-submit="addComments()" class="ng-valid ng-dirty ng-valid-parse">
+                    <div class="modal-body">
+                        <p>می توانید با وارد کردن چند کامنت در خط های جدید همزمان چند کامنت را اضافه کنید.</p>
+                        <div class="alert alert-danger alert-dismissible" role="alert">
+                            <strong>توجه !</strong>
+                            <h5>از اضافه کردن کامنت های تبلیغاتی جدا خود داری فرمایید ( باعث دریافت گزارش اسپم از طرف کاربران می شوند )</h5>
+                            <h5>سعی کنید کامنت های دو کلمه ای متفاوت، با محتوی مثبت و مناسب برای همه نوع پست به لیست اضافه کنید.</h5>
+                            <h5>ارسال کامنت مثبت تاثیر خیلی بیشتری در دریافت توجه از کاربران دارد ( بگذارید ربات مهربان بماند )</h5>
+                        </div>
+                        <label>قالب کامنت ها</label>
+                        <textarea class="form-control ng-valid ng-empty ng-dirty ng-valid-parse ng-touched" ng-model="addCommentsData" id="commentArea"></textarea>
+                        <div id="unicodeEmoji">
+
+                            <a href="#" onclick="addEmoji('😀')"><i class="emojione">😀</i></a>
+                            <a href="#" onclick="addEmoji('😁')"><i class="emojione">😁</i></a>
+                            <a href="#" onclick="addEmoji('😂')"><i class="emojione">😂</i></a>
+                            <a href="#" onclick="addEmoji('😃')"><i class="emojione">😃</i></a>
+                            <a href="#" onclick="addEmoji('😄')"><i class="emojione">😄</i></a>
+                            <a href="#" onclick="addEmoji('😅')"><i class="emojione">😅</i></a>
+                            <a href="#" onclick="addEmoji('😆')"><i class="emojione">😆</i></a>
+                            <a href="#" onclick="addEmoji('😉')"><i class="emojione">😉</i></a>
+                            <a href="#" onclick="addEmoji('😊')"><i class="emojione">😊</i></a>
+                            <a href="#" onclick="addEmoji('😋')"><i class="emojione">😋</i></a>
+                            <a href="#" onclick="addEmoji('😎')"><i class="emojione">😎</i></a>
+                            <a href="#" onclick="addEmoji('😍')"><i class="emojione">😍</i></a>
+                            <a href="#" onclick="addEmoji('😘')"><i class="emojione">😘</i></a>
+                            <a href="#" onclick="addEmoji('😗')"><i class="emojione">😗</i></a>
+                            <a href="#" onclick="addEmoji('😙')"><i class="emojione">😙</i></a>
+                            <a href="#" onclick="addEmoji('😚')"><i class="emojione">😚</i></a>
+                            <a href="#" onclick="addEmoji('🙂')"><i class="emojione">🙂</i></a>
+                            <a href="#" onclick="addEmoji('🤗')"><i class="emojione">🤗</i></a>
+                            <a href="#" onclick="addEmoji('😇')"><i class="emojione">😇</i></a>
+                            <a href="#" onclick="addEmoji('🤓')"><i class="emojione">🤓</i></a>
+                            <a href="#" onclick="addEmoji('🤔')"><i class="emojione">🤔</i></a>
+                            <a href="#" onclick="addEmoji('😐')"><i class="emojione">😐</i></a>
+                            <a href="#" onclick="addEmoji('😑')"><i class="emojione">😑</i></a>
+                            <a href="#" onclick="addEmoji('😶')"><i class="emojione">😶</i></a>
+                            <a href="#" onclick="addEmoji('🙄')"><i class="emojione">🙄</i></a>
+                            <a href="#" onclick="addEmoji('😏')"><i class="emojione">😏</i></a>
+                            <a href="#" onclick="addEmoji('😣')"><i class="emojione">😣</i></a>
+                            <a href="#" onclick="addEmoji('😥')"><i class="emojione">😥</i></a>
+                            <a href="#" onclick="addEmoji('😮')"><i class="emojione">😮</i></a>
+                            <a href="#" onclick="addEmoji('🤐')"><i class="emojione">🤐</i></a>
+                            <a href="#" onclick="addEmoji('😯')"><i class="emojione">😯</i></a>
+                            <a href="#" onclick="addEmoji('😪')"><i class="emojione">😪</i></a>
+                            <a href="#" onclick="addEmoji('😫')"><i class="emojione">😫</i></a>
+                            <a href="#" onclick="addEmoji('😴')"><i class="emojione">😴</i></a>
+                            <a href="#" onclick="addEmoji('😌')"><i class="emojione">😌</i></a>
+                            <a href="#" onclick="addEmoji('😛')"><i class="emojione">😛</i></a>
+                            <a href="#" onclick="addEmoji('😜')"><i class="emojione">😜</i></a>
+                            <a href="#" onclick="addEmoji('😝')"><i class="emojione">😝</i></a>
+                            <a href="#" onclick="addEmoji('😒')"><i class="emojione">😒</i></a>
+                            <a href="#" onclick="addEmoji('😓')"><i class="emojione">😓</i></a>
+                            <a href="#" onclick="addEmoji('😔')"><i class="emojione">😔</i></a>
+                            <a href="#" onclick="addEmoji('😕')"><i class="emojione">😕</i></a>
+                            <a href="#" onclick="addEmoji('🙃')"><i class="emojione">🙃</i></a>
+                            <a href="#" onclick="addEmoji('🤑')"><i class="emojione">🤑</i></a>
+                            <a href="#" onclick="addEmoji('😲')"><i class="emojione">😲</i></a>
+                            <a href="#" onclick="addEmoji('😷')"><i class="emojione">😷</i></a>
+                            <a href="#" onclick="addEmoji('🤒')"><i class="emojione">🤒</i></a>
+                            <a href="#" onclick="addEmoji('🤕')"><i class="emojione">🤕</i></a>
+                            <a href="#" onclick="addEmoji('🙁')"><i class="emojione">🙁</i></a>
+                            <a href="#" onclick="addEmoji('😖')"><i class="emojione">😖</i></a>
+                            <a href="#" onclick="addEmoji('😞')"><i class="emojione">😞</i></a>
+                            <a href="#" onclick="addEmoji('😟')"><i class="emojione">😟</i></a>
+                            <a href="#" onclick="addEmoji('😤')"><i class="emojione">😤</i></a>
+                            <a href="#" onclick="addEmoji('😢')"><i class="emojione">😢</i></a>
+                            <a href="#" onclick="addEmoji('😭')"><i class="emojione">😭</i></a>
+                            <a href="#" onclick="addEmoji('😦')"><i class="emojione">😦</i></a>
+                            <a href="#" onclick="addEmoji('😧')"><i class="emojione">😧</i></a>
+                            <a href="#" onclick="addEmoji('😨')"><i class="emojione">😨</i></a>
+                            <a href="#" onclick="addEmoji('😩')"><i class="emojione">😩</i></a>
+                            <a href="#" onclick="addEmoji('😬')"><i class="emojione">😬</i></a>
+                            <a href="#" onclick="addEmoji('😰')"><i class="emojione">😰</i></a>
+                            <a href="#" onclick="addEmoji('😱')"><i class="emojione">😱</i></a>
+                            <a href="#" onclick="addEmoji('😳')"><i class="emojione">😳</i></a>
+                            <a href="#" onclick="addEmoji('😵')"><i class="emojione">😵</i></a>
+                            <a href="#" onclick="addEmoji('😡')"><i class="emojione">😡</i></a>
+                            <a href="#" onclick="addEmoji('😠')"><i class="emojione">😠</i></a>
+                            <a href="#" onclick="addEmoji('😈')"><i class="emojione">😈</i></a>
+                            <a href="#" onclick="addEmoji('👿')"><i class="emojione">👿</i></a>
+                            <a href="#" onclick="addEmoji('👹')"><i class="emojione">👹</i></a>
+                            <a href="#" onclick="addEmoji('👺')"><i class="emojione">👺</i></a>
+                            <a href="#" onclick="addEmoji('💀')"><i class="emojione">💀</i></a>
+                            <a href="#" onclick="addEmoji('👻')"><i class="emojione">👻</i></a>
+                            <a href="#" onclick="addEmoji('👽')"><i class="emojione">👽</i></a>
+                            <a href="#" onclick="addEmoji('👾')"><i class="emojione">👾</i></a>
+                            <a href="#" onclick="addEmoji('🤖')"><i class="emojione">🤖</i></a>
+                            <a href="#" onclick="addEmoji('💩')"><i class="emojione">💩</i></a>
+                            <a href="#" onclick="addEmoji('😺')"><i class="emojione">😺</i></a>
+                            <a href="#" onclick="addEmoji('😸')"><i class="emojione">😸</i></a>
+                            <a href="#" onclick="addEmoji('😹')"><i class="emojione">😹</i></a>
+                            <a href="#" onclick="addEmoji('😻')"><i class="emojione">😻</i></a>
+                            <a href="#" onclick="addEmoji('😼')"><i class="emojione">😼</i></a>
+                            <a href="#" onclick="addEmoji('😽')"><i class="emojione">😽</i></a>
+                            <a href="#" onclick="addEmoji('🙀')"><i class="emojione">🙀</i></a>
+                            <a href="#" onclick="addEmoji('😿')"><i class="emojione">😿</i></a>
+                            <a href="#" onclick="addEmoji('😾')"><i class="emojione">😾</i></a>
+                            <a href="#" onclick="addEmoji('🙈')"><i class="emojione">🙈</i></a>
+                            <a href="#" onclick="addEmoji('🙉')"><i class="emojione">🙉</i></a>
+                            <a href="#" onclick="addEmoji('🙊')"><i class="emojione">🙊</i></a>
+                            <a href="#" onclick="addEmoji('👦')"><i class="emojione">👦</i></a>
+
+                            <a href="#" onclick="addEmoji('💪')"><i class="emojione">💪</i></a>
+                            <a href="#" onclick="addEmoji('👈')"><i class="emojione">👈</i></a>
+                            <a href="#" onclick="addEmoji('👉')"><i class="emojione">👉</i></a>
+                            <a href="#" onclick="addEmoji('☝')"><i class="emojione">☝</i></a>
+                            <a href="#" onclick="addEmoji('👆')"><i class="emojione">👆</i></a>
+                            <a href="#" onclick="addEmoji('👇')"><i class="emojione">👇</i></a>
+                            <a href="#" onclick="addEmoji('✌')"><i class="emojione">✌</i></a>
+                            <a href="#" onclick="addEmoji('🖖')"><i class="emojione">🖖</i></a>
+                            <a href="#" onclick="addEmoji('🤘')"><i class="emojione">🤘</i></a>
+                            <a href="#" onclick="addEmoji('🖐')"><i class="emojione">🖐</i></a>
+                            <a href="#" onclick="addEmoji('✋')"><i class="emojione">✋</i></a>
+                            <a href="#" onclick="addEmoji('👌')"><i class="emojione">👌</i></a>
+                            <a href="#" onclick="addEmoji('👍')"><i class="emojione">👍</i></a>
+                            <a href="#" onclick="addEmoji('👎')"><i class="emojione">👎</i></a>
+                            <a href="#" onclick="addEmoji('✊')"><i class="emojione">✊</i></a>
+                            <a href="#" onclick="addEmoji('👊')"><i class="emojione">👊</i></a>
+                            <a href="#" onclick="addEmoji('👋')"><i class="emojione">👋</i></a>
+                            <a href="#" onclick="addEmoji('👏')"><i class="emojione">👏</i></a>
+                            <a href="#" onclick="addEmoji('👐')"><i class="emojione">👐</i></a>
+                            <a href="#" onclick="addEmoji('✍')"><i class="emojione">✍</i></a>
+                            <a href="#" onclick="addEmoji('💅')"><i class="emojione">💅</i></a>
+                            <a href="#" onclick="addEmoji('👂')"><i class="emojione">👂</i></a>
+                            <a href="#" onclick="addEmoji('👃')"><i class="emojione">👃</i></a>
+                            <a href="#" onclick="addEmoji('👣')"><i class="emojione">👣</i></a>
+                            <a href="#" onclick="addEmoji('👀')"><i class="emojione">👀</i></a>
+                            <a href="#" onclick="addEmoji('👅')"><i class="emojione">👅</i></a>
+                            <a href="#" onclick="addEmoji('👄')"><i class="emojione">👄</i></a>
+                            <a href="#" onclick="addEmoji('💋')"><i class="emojione">💋</i></a>
+                            <a href="#" onclick="addEmoji('💘')"><i class="emojione">💘</i></a>
+                            <a href="#" onclick="addEmoji('❤')"><i class="emojione">❤</i></a>
+                            <a href="#" onclick="addEmoji('💓')"><i class="emojione">💓</i></a>
+                            <a href="#" onclick="addEmoji('💔')"><i class="emojione">💔</i></a>
+                            <a href="#" onclick="addEmoji('💕')"><i class="emojione">💕</i></a>
+                            <a href="#" onclick="addEmoji('💖')"><i class="emojione">💖</i></a>
+                            <a href="#" onclick="addEmoji('💗')"><i class="emojione">💗</i></a>
+                            <a href="#" onclick="addEmoji('💙')"><i class="emojione">💙</i></a>
+                            <a href="#" onclick="addEmoji('💚')"><i class="emojione">💚</i></a>
+                            <a href="#" onclick="addEmoji('💛')"><i class="emojione">💛</i></a>
+                            <a href="#" onclick="addEmoji('💜')"><i class="emojione">💜</i></a>
+                            <a href="#" onclick="addEmoji('💝')"><i class="emojione">💝</i></a>
+                        </div>
+                    </div>
+
+
+                </form>
+                <button type="button" class="btn btn-primary addcmnt" onclick="addComment()">
+                    اضافه کن
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="popup" id="all5">
+        <div class="modal1 animation">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="offscrl5();"><span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title">قالب دایرکت جدید</h4>
+                </div>
+                <form ng-submit="addComments()" class="ng-valid ng-dirty ng-valid-parse">
+                    <div class="modal-body">
+                        <p>می توانید دایرکت خود را چند خطی وارد کنید.</p>
+                        <div class="alert alert-info" role="alert">
+                            <strong>توجه !</strong>
+                            <h5>دایرکت برای کاربرانی ارسال می&zwnj;شود که شما را فالو می کنند.</h5>
+                            <h5>در متن دایرکت بهتر است از کاربر تشکر کنید و یا آدرس و شماره کسب و کار صفحه را برای کاربر ارسال کنید.</h5>
+                            <h5>دایرکت تاثیر بسیار زیادی در جذب مشتری و فالوور فعال دارد.</h5>
+                            <h5>می توانید در قالب از تگ های تصادفی ساز برای مثال {سلام|درود} یا منشن کردن کاربر با @username استفاده کنید.</h5>
+                        </div>
+                        <label>قالب دایرکت</label>
+                        <textarea class="form-control ng-valid ng-empty ng-dirty ng-valid-parse ng-touched" ng-model="addCommentsData" id="directArea"></textarea>
+                    </div>
+
+
+                </form>
+                <button type="button" class="btn btn-primary addcmnt" onclick="addDirect()">
+                    اضافه کن
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="popup" id="all7">
+        <div class="modal1 animation">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="offscrl7();"><span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title">اضافه کردن کاربران هدف کپی پست</h4>
+                </div>
+
+                <div class="modal-body">
+                    <p>سعی کنید کاربرانی با بیش از ده هزار فالوور و هم موضوع با صفحه خودتان را انتخاب کنید.</p>
+                    <div class="alert alert-warning" role="alert">
+                        <strong>توجه !</strong>
+                        <h5>بهتر است قبل از اضافه کردن کاربر هدف جدید از واقعی بودن ( فیک نبودن ) فالوور های آنها با چک کردن لیست فالوور ها در برنامه اینستاگرام اطمینان حاصل کنید.</h5>
+                    </div>
+                    <label>نام کاربری</label>
+                    <input type="text" id="addPostTargetArea" class="form-control" onkeydown="enter_call_function(event,this, function(){ return search_user('addPostTargetArea','addTargetPostHere', 'addedTargetPost'); });"><button class="btn btn-success" onclick="search_user('addPostTargetArea','addTargetPostHere', 'addedTargetPost')">جستجو</button>
+                    <div class="showAddTargetArea" id="addTargetPostHere">
+
+                    </div>
+                </div>
+
+                <button type="button" class="btn btn-primary addcmnt" onclick="add_users('addedTargetPost', 'addTargetPostsBeforeThis', 'addFinalTargetPostsHere', 'userTargetid_text', 'userTargetname_text')">
+                    اضافه کن
+                </button>
+            </div>
+        </div>
+    </div>
+    <script>
+        $("#unicodeEmoji").html(emojione.unicodeToImage($("#unicodeEmoji").html()));
+    </script>
+
+    <div class="popup" id="all6">
+        <div class="modal1 animation">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="offscrl6();"><span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title">اضافه کردن به لیست آنفالو نکن</h4>
+                </div>
+
+                <div class="modal-body">
+                    <label>نام کاربری</label>
+                    <input type="text" id="whiteListArea" class="form-control">
+                    <button class="btn btn-success" onclick="search_user('whiteListArea','addWhiteListHere', 'addedWhitelist')">جستجو</button>
+                    <div class="showAddTargetArea" id="addWhiteListHere">
+
+                    </div>
+
+                    <button type="button" class="btn btn-primary addcmnt" onclick="add_users('addedWhitelist', 'addWhiteListBeforeThis', 'whiteList', 'whitelistid_text', 'whitelistusername_text')">
+                            اضافه کن
+                    </button>
+                    <hr>
+                    <div class="allsetting">
+                            <div class="row">
+                                <div class="col-md-12 lccheck">
+                                    <div class="setting-panel-div" id="whiteList">
+                                        <span>لیست آنفالو نکن</span>
+                                            {% for user in instagramUser.setting.unfollow.whiteList %}
+                                                <div class="btn-group">
+                                                    <button type="button" class="btn btn-info" onclick="deleteItem(this.parentNode)"><span class="fas fa-times"></span></button>
+                                                    <button type="button" class="btn btn-default  ng-binding"><span class="fas "></span> <span class="whitelistusername_text">{{ user.userName }}</span></button>
+                                                <span class="whitelistid_text" style="display:none;">{{ user.userId }}</span></div>
+                                            {% endfor %}
+                                        <div class="btn-group" id="addWhiteListBeforeThis" style="display: none;">
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT-->
+    <div class="main-content">
+        <div class="section__content section__content--p30">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="overview-wrap">
+                            <h2 class="title-5">داشبورد<span>تنظیمات یوزر</span></h2>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-12">
+                    <form id="mainForm" onsubmit="return gatherInfo()" action="" method="POST">
+                        {% csrf_token %}
+                        <div class="card">
+                            <div class="card-header">
+                                <img src="images/icon/prof2.svg" alt="">
+                                <span class="card-title">{{ instagramUser.username }}
+
+                                </span>
+                            </div>
+                            <div class="card-body">
+                                <h4>تنظیمات</h4>
+                                <div class="row">
+                                    <div class="col-md-4" id="{% if instagramUser.status == 0 or instagramUser.status == 1 %}off1{% else %}on1{% endif %}">
+                                        <span class="settingbot">وضعیت ربات :<h5 id="statush5">
+                                            {% if instagramUser.status == 0 %} روشن
+                                            {% elif instagramUser.status == 100 %} خاموش
+                                            {% elif instagramUser.status == -100 %} نیاز به ورود مجدد
+                                            {% elif instagramUser.status == 1 %} انتظار برای شروع
+                                            {% endif %}
+                                        </h5></span>
+                                        <div class="show-time">
+                                            <div class="remaining-clock"><span class="far fa-clock"></span></div>
+                                            <div>
+                                                <h4>شارژ باقی مانده</h4>
+                                                <h5 id="userCharge0">{{ instagramUser.charge|get_h_m_s }}</h5>
+                                            </div>
+                                        </div>
+                                        <button type="button" class="btn btn-success btn-block" onclick="startUser({{ instagramUser.uid }}, this, 'statush5')">
+                                            {% if instagramUser.status == 0 or instagramUser.status == 1 %}خاموش کن{% else %}روشن کن{% endif %}
+                                        </button>
+                                    </div>
+                                    <div class="col-md-4 robotdoing">
+                                        <p>ربات چه کارهایی انجام دهد</p>
+                                        <div class="col-sm-12">
+                                            <div class="row">
+                                                <span class="col-sm-6"><span class="fas fa-comment"></span>کامنت</span><input type="checkbox" {% if instagramUser.setting.commentFlag %} checked {% endif %} name="commentFlag" id="robotdo1"><label for="robotdo1" class="col-sm-6"><span class="onnn">فعال</span><span class="offf">غیر فعال</span>
+                                                    <div style="clear: both;"></div>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12">
+                                            <div class="row">
+                                                <span class="col-sm-6"><span class="fas fa-thumbs-up"></span>لایک</span><input type="checkbox"  {% if instagramUser.setting.likeFlag %} checked {% endif %} name="likeFlag" id="robotdo2"><label for="robotdo2" class="col-sm-6"><span class="onnn">فعال</span><span class="offf">غیر فعال</span>
+                                                    <div style="clear: both;"></div>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12">
+                                            <div class="row">
+                                                <span class="col-sm-6"><span class="fas fa-comment-dots"></span>لایکِ کامنت</span><input type="checkbox" {% if instagramUser.setting.commentsLikeFlag  %} checked {% endif %} name="commentsLikeFlag" id="robotdo3"><label for="robotdo3" class="col-sm-6"><span class="onnn">فعال</span><span class="offf">غیر فعال</span>
+                                                    <div style="clear: both;"></div>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12">
+                                            <div class="row">
+                                                <span class="col-sm-6"><span class="fas fa-user-plus"></span>فالو</span><input type="checkbox" {% if instagramUser.setting.flwFlag %} checked {% endif %} name="flwFlag" id="robotdo4"><label for="robotdo4" class="col-sm-6"><span class="onnn">فعال</span><span class="offf">غیر فعال</span>
+                                                    <div style="clear: both;"></div>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12">
+                                            <div class="row">
+                                                <span class="col-sm-6"><span class="fas fa-user-times"></span>آنفالو</span><input type="checkbox" {% if instagramUser.setting.unflwFlag  %} checked {% endif %} name="unflwFlag" id="robotdo5"><label for="robotdo5" class="col-sm-6"><span class="onnn">فعال</span><span class="offf">غیر فعال</span>
+                                                    <div style="clear: both;"></div>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12">
+                                            <div class="row">
+                                                <span class="col-sm-6"><span class="fas fa-paper-plane"></span>دایرکت</span><input type="checkbox" {% if instagramUser.setting.directFlag %} checked {% endif %} name="directFlag" id="robotdo6"><label for="robotdo6" class="col-sm-6"><span class="onnn">فعال</span><span class="offf">غیر فعال</span>
+                                                    <div style="clear: both;"></div>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <p> </p>
+                                        <button type="submit" class="btn btn-primary btn-block"><span class="fas fa-pencil-alt"></span>
+                                            ذخیره کردن تغییرات
+                                        </button>
+                                        <button type="button" class="btn btn-danger btn-block" onclick="window.location.href='/ticket/{{ request.user.id }}/';"><span class="far fa-question-circle"></span>
+                                            پشتیبانی
+                                        </button>
+                                        <button type="button" class="btn btn-success btn-block" onclick="window.location.href='/client/plan/list/';"><span class="fas fa-shopping-cart"></span>
+                                            خرید شارژ
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="allsetting">
+                            <div class="part1">
+                                <h3><span class="fas fa-rocket"></span> تنظیمات سرعت</h3>
+                                <div class="row">
+                                    <div class="col-md-4 setting-panel">
+                                        <div class="setting-panel-div">
+                                            <span>سرعت فعالیت</span>
+                                            <div class="select-style">
+                                                <select name="speed" onchange="enableDisable(this)">
+                                                    <option label="کم" value="1" {% if instagramUser.setting.speed == 1 %}selected {% endif %}>کم</option>
+                                                    <option label="متوسط" value="2" {% if instagramUser.setting.speed == 2 %}selected {% endif %}>متوسط</option>
+                                                    <option label="زیاد" value="3" {% if instagramUser.setting.speed == 3 %}selected {% endif %}>زیاد</option>
+                                                    <option label="دستی" value="0" {% if instagramUser.setting.speed == 0 %}selected {% endif %}>دستی</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4 setting-panel">
+                                        <div class="setting-panel-div">
+                                            <span>فالو در ساعت</span>
+                                            <input type="number" min="0" name="flwPerHour" value="{{ instagramUser.setting.flwPerHour }}" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 setting-panel">
+                                        <div class="setting-panel-div">
+                                            <span>آنفالو در ساعت</span>
+                                            <input type="number" min="0" name="unflwPerHour" value="{{ instagramUser.setting.unflwPerHour }}" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 setting-panel">
+                                        <div class="setting-panel-div">
+                                            <span>لایک در ساعت</span>
+                                            <input type="number" min="0" name="likePerHour" value="{{ instagramUser.setting.likePerHour }}"  disabled>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4 setting-panel">
+                                        <div class="setting-panel-div">
+                                            <span>کامنت در ساعت</span>
+                                            <input type="number" min="0" name="commentPerHour" value="{{ instagramUser.setting.commentPerHour }}" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 setting-panel">
+                                        <div class="setting-panel-div">
+                                            <span>دایرکت در ساعت</span>
+                                            <input type="number" min="0" name="directPerHour" value="{{ instagramUser.setting.directPerHour }}" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 setting-panel">
+                                        <div class="setting-panel-div">
+                                            <span>لایکِ کامنت در ساعت</span>
+                                            <input type="number" min="0" name="commentsLikePerHour" value="{{ instagramUser.setting.commentsLikePerHour }}" disabled>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="part2">
+                                <h3><span class="fas fa-cogs"></span> تنظیمات فیلتر ها</h3>
+                                <div class="row">
+                                    <div class="col-md-4 lccheck">
+                                        <div class="setting-panel-div">
+
+                                            <span class="col-sm-8">دوبار برای یک کاربر کامنت نگذار</span>
+                                            <input type="checkbox" {% if instagramUser.setting.comment.dontTryAgain %} checked {% endif %} name="commentDontTryAgain" id="do1">
+                                            <label for="do1" class="col-sm-6"><span class="onnn">فعال</span><span class="offf">غیر فعال</span>
+                                                <div style="clear: both;"></div>
+                                            </label>
+
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 lccheck">
+                                        <div class="setting-panel-div">
+                                            <span class="col-sm-8">دوبار تلاش نکن</span><input type="checkbox" {% if instagramUser.setting.follow.dontTryAgain %} checked {% endif %} name="followDontTryAgain" id="do2"><label for="do2" class="col-sm-6"><span class="onnn">فعال</span><span class="offf">غیر فعال</span>
+                                                <div style="clear: both;"></div>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 lccheck">
+                                        <div class="setting-panel-div">
+                                            <span class="col-sm-8">رد شدن از روی اکانت های بیزنس</span><input type="checkbox" {% if instagramUser.setting.follow.doseNotFlwBusiness %} checked {% endif %} name="doseNotFlwBusiness" id="do3"><label for="do3" class="col-sm-6"><span class="onnn">فعال</span><span class="offf">غیر فعال</span>
+                                                <div style="clear: both;"></div>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4 setting-panel">
+                                        <div class="setting-panel-div">
+                                            <span>منبع فالو</span>
+                                            <div class="select-style col-sm-6">
+                                                <select name="followMode">
+                                                    <option label="فالوور های کاربران هدف" value="1" {% if instagramUser.setting.follow.mode == 1 %} selected {% endif %}>فالوور های کاربران هدف</option>
+                                                    <option label="لایک کنندگان و کامنت گذارندگان کاربران هدف" value="2" {% if instagramUser.setting.follow.mode == 2 %} selected {% endif %}>لایک کنندگان و کامنت گذارندگان کاربران هدف</option>
+                                                    <option label="کاربران تگ ها و موقعیت های جغرافیایی" value="3" {% if instagramUser.setting.follow.mode == 3 %} selected {% endif %}>کاربران تگ ها و موقعیت های جغرافیایی</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 setting-panel">
+                                        <div class="setting-panel-div">
+                                            <span>منبع لایک و کامنت</span>
+                                            <div class="select-style  col-sm-6">
+                                                <select name="likeMode">
+                                                    <option label="فالوور های کاربران هدف" value="1" {% if instagramUser.setting.like.mode == 1 %} selected {% endif %}>فالوور های کاربران هدف</option>
+                                                    <option label="لایک کنندگان و کامنت گذارندگان کاربران هدف" value="2" {% if instagramUser.setting.like.mode == 2 %} selected {% endif %}>لایک کنندگان و کامنت گذارندگان کاربران هدف</option>
+                                                    <option label="کاربران تگ ها و موقعیت های جغرافیایی" value="3" {% if instagramUser.setting.like.mode == 3 %} selected {% endif %}>کاربران تگ ها و موقعیت های جغرافیایی</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 setting-panel">
+                                        <div class="setting-panel-div">
+                                            <span>منبع لایکِ کامنت</span>
+                                            <div class="select-style  col-sm-6">
+                                                <select name="commentslikeMode">
+                                                    <option label="کامنت های پست های فالوور های کاربران هدف" value="1" {% if instagramUser.setting.commentsLike.mode == 1 %} selected {% endif %}>کامنت های پست های فالوور های کاربران هدف</option>
+                                                    <option label="کامنت های پست های لایک کنندگان و کامنت گذاران کاربران هدف" value="2" {% if instagramUser.setting.commentsLike.mode == 2 %} selected {% endif %}>کامنت های پست های لایک کنندگان و کامنت گذاران کاربران هدف</option>
+                                                    <option label="کامنت های پست های تگ ها و موقعیت جغرافیایی" value="3" {% if instagramUser.setting.commentsLike.mode == 3 %} selected {% endif %}>کامنت های پست های تگ ها و موقعیت جغرافیایی</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4 setting-panel">
+                                        <div class="setting-panel-div">
+                                            <span>حدود فالوور صفحات</span>
+                                            <div class="input-gp">
+
+                                                <input type="number" min="0" name="followFlwers1" class="" value="{{ instagramUser.setting.follow.flwers.0 }}">
+                                                <p class="input-gp-addon">تا</p>
+                                                <input type="number" min="0" name="followFlwers2" class="" value="{{ instagramUser.setting.follow.flwers.1 }}">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4 setting-panel">
+                                        <div class="setting-panel-div ">
+                                            <span>حدود فالووینگ صفحات</span>
+                                            <div class="input-gp">
+
+                                                <input type="number" min="0" name="followFlwing1" class="" value="{{ instagramUser.setting.follow.flwing.0 }}">
+                                                <p class="input-gp-addon">تا</p>
+                                                <input type="number" min="0" name="followFlwing2" class="" value="{{ instagramUser.setting.follow.flwing.1 }}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 setting-panel">
+                                        <div class="setting-panel-div">
+                                            <span>حدود تعداد پست صفحات</span>
+                                            <div class="input-gp">
+
+                                                <input type="number" min="0" name="followposts1" class="" value="{{ instagramUser.setting.follow.posts.0 }}">
+                                                <p class="input-gp-addon">تا</p>
+                                                <input type="number" min="0" name="followposts2" class="" value="{{ instagramUser.setting.follow.posts.1 }}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4 setting-panel">
+                                        <div class="setting-panel-div">
+                                            <span>حدود لایک پست ها</span>
+                                            <div class="input-gp">
+
+                                                <input type="number" min="0" name="likeLikes1" class="" value="{{ instagramUser.setting.like.likes.0 }}">
+                                                <p class="input-gp-addon">تا</p>
+                                                <input type="number" min="0" name="likeLikes2" class="" value="{{ instagramUser.setting.like.likes.1 }}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 setting-panel">
+                                        <div class="setting-panel-div">
+                                            <span>حدود کامنت پست ها</span>
+                                            <div class="input-gp">
+
+                                                <input type="number" min="0" name="likecomments1" class="" value="{{ instagramUser.setting.like.comments.0 }}">
+                                                <p class="input-gp-addon">تا</p>
+                                                <input type="number" min="0" name="likecomments2" class="" value="{{ instagramUser.setting.like.comments.1 }}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 setting-panel">
+                                        <div class="setting-panel-div">
+                                            <span>جنسیت کاربر</span>
+                                            <div class="select-style col-sm-6">
+                                                <select name="followGender">
+                                                    <option label="انتخاب نشده" value="0" {% if instagramUser.setting.follow.gender == 0 %} selected {% endif %}>انتخاب نشده</option>
+                                                    <option label="مرد" value="1" {% if instagramUser.setting.follow.gender == 1 %} selected {% endif %}>مرد</option>
+                                                    <option label="زن" value="2" {% if instagramUser.setting.follow.gender == 2 %} selected {% endif %}>زن</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-4 lccheck">
+                                        <div class="setting-panel-div">
+                                            <span class="col-sm-8">برای همه کاربران هدف دایرکت بفرست</span>
+                                            <input type="checkbox" onchange="send_direct_to_all(this)" {% if instagramUser.setting.direct.sendToAll %} checked {% endif %} name="directSendToAll" id="do7">
+                                            <label for="do7" class="col-sm-6"><span class="onnn">فعال</span><span class="offf">غیر فعال</span>
+                                                <div style="clear: both;"></div>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4 lccheck">
+                                        <div class="setting-panel-div">
+                                            <span class="col-sm-8">پست های کاربران هدف را کپی کن</span>
+                                            <input type="checkbox" onchange="copy_posts(this)" {% if instagramUser.setting.post.copyPosts %} checked {% endif %} name="copyPosts" id="do8">
+                                            <label for="do8" class="col-sm-6"><span class="onnn">فعال</span><span class="offf">غیر فعال</span>
+                                                <div style="clear: both;"></div>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4 lccheck" id="copyCaptionDiv">
+                                        <div class="setting-panel-div">
+                                            <span class="col-sm-8">کپشن پست ها را کپی کن</span>
+                                            <input type="checkbox" onchange="copy_caption(this)" {% if instagramUser.setting.post.copyCaption %} checked {% endif %} name="copyCaption" id="do9">
+                                            <label for="do9" class="col-sm-6"><span class="onnn">فعال</span><span class="offf">غیر فعال</span>
+                                                <div style="clear: both;"></div>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-12 lccheck" id="defaultCaptionDiv">
+                                        <div class="setting-panel-div">
+                                            <span class="col-sm-8">کپشن پیشفرض برای پست های کپی شده</span>
+                                            <textarea name="caption" id="do10" placeholder="کپشن" cols="50" rows="5">{{ instagramUser.setting.post.caption }}</textarea>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="part3">
+                                <h3><span class="fas fa-user-plus"></span> تنظیمات فالوو</h3>
+                                <div class="row">
+                                    <div class="col-md-6 lccheck">
+                                        <div class="setting-panel-div">
+                                            <span class="col-sm-6">لایک پست آخر</span>
+                                            <input type="checkbox" name="likeLikeAfterFlw" {% if instagramUser.setting.like.likeAfterFlw %} checked {% endif %} id="do5">
+                                            <label for="do5" class="col-sm-6"><span class="onnn">فعال</span><span class="offf">غیر فعال</span>
+                                                <div style="clear: both;"></div>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 lccheck">
+                                        <div class="setting-panel-div">
+                                            <span class="col-sm-6">کامنت پست آخر</span>
+                                            <input type="checkbox" name="commentCommentAfterFlw" {% if instagramUser.setting.comment.commentAfterFlw %} checked {% endif %} id="do6">
+                                            <label for="do6" class="col-sm-6"><span class="onnn">فعال</span><span class="offf">غیر فعال</span>
+                                                <div style="clear: both;"></div>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 lccheck">
+                                        <div class="setting-panel-div">
+                                            <span class="col-sm-6">کاربران پرایویت را فالو بکن</span>
+                                            <input type="checkbox" name="followPrivate" {% if instagramUser.setting.follow.flwPrivate %} checked {% endif %} id="do4">
+                                            <label for="do4" class="col-sm-6"><span class="onnn">فعال</span><span class="offf">غیر فعال</span>
+                                                <div style="clear: both;"></div>
+                                            </label>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-6 lccheck">
+                                        <div class="setting-panel-div">
+                                            <span class="col-sm-6">کاربران پابلیک را فالو بکن</span>
+                                            <input type="checkbox" name="followPublic" {% if instagramUser.setting.follow.flwPublic %} checked {% endif %} id="do11">
+                                            <label for="do11" class="col-sm-6"><span class="onnn">فعال</span><span class="offf">غیر فعال</span>
+                                                <div style="clear: both;"></div>
+                                            </label>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 lccheck">
+                                        <div class="setting-panel-div">
+                                            <span class="col-sm-6">فقط کاربرانی که عکس دارند را فالو کن</span>
+                                            <input type="checkbox" name="followHasPic" {% if instagramUser.setting.follow.hasPic %} checked {% endif %} id="do12">
+                                            <label for="do12" class="col-sm-6"><span class="onnn">فعال</span><span class="offf">غیر فعال</span>
+                                                <div style="clear: both;"></div>
+                                            </label>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="col-md-6 lccheck">
+                                        <div class="setting-panel-div idn">
+                                            <span>میزان فالوو از فالوور های بازار هدف</span>
+                                            <div class="select-style col-sm-6">
+                                                <select name="followLimit">
+                                                    {% for i in range %}
+                                                        <option value="{{ i }}" {% if instagramUser.setting.follow.limits == i %} selected {% endif %}>{{ i }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="part4">
+                                <h3><span class="fas fa-user-times"></span> تنظیمات آنفالو</h3>
+                                <div class="row">
+                                    <div class="col-md-6 lccheck">
+                                        <div class="setting-panel-div idn">
+                                            <span>منبع آنفالو</span>
+                                            <div class="select-style  col-sm-6">
+                                                <select name="unfollowMode">
+                                                    <option label="فقط کسانی که ربات فالوو کرده" value="1" {% if instagramUser.setting.unfollow.mode == 1 %} selected {% endif %}>فقط کسانی که ربات فالوو کرده</option>
+                                                    <option label="همه ی فالووینگ لیست من" value="2" {% if instagramUser.setting.unfollow.mode == 2 %} selected {% endif %}>همه ی فالووینگ لیست من</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 lccheck">
+                                        <div class="setting-panel-div">
+                                            <span>چرخه آنفالو کردن</span>
+                                            <input type="number" name="unfollowStartFlwing" value="{{ instagramUser.setting.unfollow.startFlwing }}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 lccheck">
+                                        <div class="setting-panel-div idn">
+                                            <span>آنفالو بعد از</span>
+                                            <div class="select-style col-sm-6">
+                                                <select name="unfollowTime">
+                                                    <option label="۲۴ ساعت" value="86400" {% if instagramUser.setting.unfollow.time == 86400 %} selected {% endif %}>۲۴ ساعت</option>
+                                                    <option label="۳۶ ساعت" value="129600" {% if instagramUser.setting.unfollow.time == 129600 %} selected {% endif %}>۳۶ ساعت</option>
+                                                    <option label="۴۸ ساعت" value="172800" {% if instagramUser.setting.unfollow.time == 172800 %} selected {% endif %}>۴۸ ساعت</option>
+                                                    <option label="۷۲ ساعت" value="259200" {% if instagramUser.setting.unfollow.time == 259200 %} selected {% endif %} >۷۲ ساعت</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 lccheck">
+                                        <div class="setting-panel-div">
+                                            <span>آنفالوو نکن</span>
+                                            <button type="button" class="btn btn-success " id="adding6" onclick="modal6.style.display = 'block';" style="font-size: 12px;margin-right: -10px;padding-right: -10px;">
+                                                <span class="fas fa-lock"></span>
+                                                لیست آنفالو نکن
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="part5">
+                                <h3><span class="fas fa-tags"></span> تنظیمات تگ ها</h3>
+                                <div class="row">
+                                    <div class="col-md-12 lccheck">
+                                        <div class="setting-panel-div" id="addTagHere">
+                                            <span>لیست تگ ها</span>
+                                            {% for tag in instagramUser.setting.tags %}
+                                                {% if tag.mode == 'tag' %}
+                                                    <div class="btn-group">
+                                                        <button type="button" class="btn btn-info" onclick="deleteItem(this.parentNode)"><span class="fas fa-times"></span></button>
+                                                        <button type="button" class="btn btn-default  ng-binding"><span class="fas fa-hashtag"></span> <span class="tag_text">{{ tag.text }}</span></button>
+                                                        <span class="pktag_text" style="display:none;">{{ tag.pk }}</span>
+                                                    </div>
+                                                {% endif %}
+                                            {% endfor %}
+
+                                            <div class="btn-group" id="addTagBeforeThis">
+                                                <button type="button" class="btn btn-success" id="adding1" onclick=" modal1.style.display = 'block';"><span class="fas fa-plus"></span> اضافه کردن</button>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="part6">
+                                <h3><span class="fas fa-map-marker"></span>تنظیمات مختصات جغرافیایی</h3>
+                                <div class="row">
+                                    <div class="col-md-12 lccheck">
+                                        <div class="setting-panel-div" id="addTargetLocationsHere">
+                                            <span>لیست موقعیت های مکانی</span>
+                                            {% for tag in instagramUser.setting.tags %}
+                                                {% if tag.mode == 'location' %}
+                                                    <div class="btn-group">
+                                                        <button type="button" class="btn btn-info" onclick="deleteItem(this.parentNode)"><span class="fas fa-times"></span></button>
+                                                        <button type="button" class="btn btn-default  ng-binding"><span class="fas fa-map-marker"></span> <span class="location_text">{{ tag.text }}</span></button>
+                                                        <span class="pklocation_text" style="display:none;">{{ tag.pk }}</span>
+                                                    </div>
+                                                {% endif %}
+                                            {% endfor %}
+
+                                            <div class="btn-group" id="addTargetLocationsBeforeThis">
+                                                <button type="button" class="btn btn-success" id="adding2" onclick=" modal2.style.display = 'block';"><span class="fas fa-plus"></span> اضافه کردن</button>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="part7">
+                                <h3><span class="fas fa-users"></span>تنظیمات کاربران هدف</h3>
+                                <div class="row">
+                                    <div class="col-md-12 lccheck">
+                                        <div class="setting-panel-div" id="addTargetUsersHere">
+                                            <span>لیست کاربران هدف</span>
+                                            {% for target in instagramUser.setting.targets %}
+                                                <div class="btn-group">
+                                                    <button type="button" class="btn btn-info" onclick="deleteItem(this.parentNode)"><span class="fas fa-times"></span></button>
+                                                    <button type="button" class="btn btn-default  ng-binding"><span class="fas "></span> <span class="username_text">{{ target.userName }}</span></button>
+                                                    <span class="userid_text" style="display:none;">{{ target.userId }}</span>
+                                                </div>
+                                            {% endfor %}
+                                            <div class="btn-group" id="addTargetUsersBeforeThis">
+                                                <button type="button" class="btn btn-success" id="adding3" onclick=" modal3.style.display = 'block';"><span class="fas fa-plus"></span> اضافه کردن</button>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="part8">
+                                <h3><span class="fas fa-comments"></span> تنظیمات کامنت</h3>
+                                <div class="row">
+                                    <div class="col-md-12 lccheck">
+                                        <div class="setting-panel-div" id="addCommentHere">
+                                            <span>قالب کامنت ها</span>
+
+                                            {% for comment in instagramUser.setting.comment.commentList %}
+                                                <div class="btn-group">
+                                                    <button type="button" class="btn btn-info" onclick="deleteItem(this.parentNode)"><span class="fas fa-times"></span></button>
+                                                    <button type="button" class="btn btn-default  ng-binding"><span class="fas fa-comment"></span> <span class="comment_text">{{ comment }}</span></button>
+                                                </div>
+                                            {% endfor %}
+
+                                            <div class="btn-group" id="addCommentBeforeThis">
+                                                <button type="button" class="btn btn-success" id="adding4" onclick=" modal4.style.display = 'block';"><span class="fas fa-plus" id=""></span> اضافه کردن</button>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="part9">
+                                <h3><span class="far fa-paper-plane"></span> تنظیمات دایرکت</h3>
+                                <div class="row">
+                                    <div class="col-md-12 lccheck">
+                                        <div class="setting-panel-div" id="addDirectHere">
+                                            <span>قالب دایرکت ها</span>
+
+                                            {% for direct in instagramUser.setting.direct.messageList %}
+                                                <div class="btn-group">
+                                                    <button type="button" class="btn btn-info" onclick="deleteItem(this.parentNode)"><span class="fas fa-times"></span></button>
+                                                    <button type="button" class="btn btn-default  ng-binding"><span class="fas fa-envelope"></span> <span class="direct_text">{{ direct }}</span></button>
+                                                </div>
+                                            {% endfor %}
+
+                                            <div class="btn-group" id="addDirectBeforeThis">
+                                                <button type="button" class="btn btn-success" id="adding5" onclick="modal5.style.display = 'block';"><span class="fas fa-plus"></span> اضافه کردن</button>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="part10">
+                                <h3><span class="fas fa-users"></span>تنظیمات کپی پست های کاربران هدف</h3>
+                                <div class="row">
+                                    <div class="col-md-12 lccheck">
+                                        <div class="setting-panel-div" id="addFinalTargetPostsHere">
+                                            <span>لیست کاربران هدف کپی پست</span>
+
+                                            {% for target in instagramUser.setting.targetPosts %}
+                                                <div class="btn-group">
+                                                    <button type="button" class="btn btn-info" onclick="deleteItem(this.parentNode)"><span class="fas fa-times"></span></button>
+                                                    <button type="button" class="btn btn-default  ng-binding"><span class="fas "></span> <span class="userTargetname_text">{{ target.userName }}</span></button>
+                                                    <span class="userTargetid_text" style="display:none;">{{ target.userId }}</span>
+                                                </div>
+                                            {% endfor %}
+                                            <div class="btn-group" id="addTargetPostsBeforeThis">
+                                                <button type="button" class="btn btn-success" id="adding7" onclick=" modal7.style.display = 'block';"><span class="fas fa-plus"></span> اضافه کردن</button>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12 savesett">
+                                <button class="btn btn-info " type="submit"><span class="fas fa-pencil-alt"></span> ذخیره کردن تغییرات</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <footer>
+                    <p>کپی رایت © نرم افزار ربات تبلیغات اینستاگرام. تمامی حقوق طراحی و ایده ها محفوظ و هرگونه کپی برداری پیگرد قانونی دارد.</p>
+                </footer>
+            </div>
+        </div>
+    </div>
+{% endblock %}

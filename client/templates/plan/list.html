@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}
+    خرید اعتبار
+{% endblock %}
+
+{% block main %}
+<div class="main-content">
+    <div class="section__content section__content--p30">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="overview-wrap">
+                        <h2 class="title-5">داشبورد<span>خرید اعتبار</span></h2>
+                        <h2 class="title-5-2"><span><span class="selct">انتخاب بسته</span> / انتخاب اکانت ها برای شارژ / پیش فاکتور و پرداخت</span></h2>
+                        <h2 class="title-5-1">
+                            <li></li>
+                            <span>لطفا بسته شارژ مورد نظر خود را انتخاب کنید</span>
+                        </h2>
+                        <!--
+                            <button class="au-btn au-btn-icon au-btn--blue">
+                                <i class="zmdi zmdi-plus"></i>add item</button>
+                            -->
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="planscards" id="plans">
+                    <div class="row2">
+                        {% for plan in plans %}
+                            <div class="planscard col-md-4">
+                                <div class="planscarddiv2">
+                                    <h3>{{ plan.name }}</h3>
+                                    <h4>{{ plan.price }} تومان</h4>
+                                    <div>
+                                        <ul>
+                                            <li>{{ plan.time }}<span class="fa fa-check"></span></li>
+                                            <li>متوسط افزایش فالوور {{ plan.followers1 }} تا {{ plan.followers2 }} نفر<span class="fa fa-check"></span></li>
+                                            <li>دریافت فالوور نامحدود<span class="fa fa-check"></span></li>
+                                            <li>پنل حرفه ای و نامحدود<span class="fa fa-check"></span></li>
+                                            <li>تنظیمات دلخواه<span class="fa fa-check"></span></li>
+                                            <li>نمایش آمار پیشرفته<span class="fa fa-check"></span></li>
+                                            <li>نمایش زنده فعالیت<span class="fa fa-check"></span></li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <a href="/client/{{ request.user.id }}/plan/{{ plan.id }}/select/" class="buyplane">خرید</a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END MAIN CONTENT-->
+<!-- END PAGE CONTAINER-->
+<footer class="settingfooter">
+    <p>کپی رایت © نرم افزار ربات تبلیغات اینستاگرام. تمامی حقوق طراحی و ایده ها محفوظ و هرگونه کپی برداری پیگرد قانونی دارد.</p>
+</footer>
+{% endblock %}

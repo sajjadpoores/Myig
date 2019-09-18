@@ -1,0 +1,16 @@
+نام کاربری:
+{{ client.username }}
+<br>
+ایمیل:
+{{ client.email }}
+<br>
+از مدت رایگان استفاده کرده:
+{{ client.used_free }}
+<br>
+بازاریاب:
+{{ client.marketer }}
+{% if client.parent %}
+    <br>
+    معرف:
+    {{ client.parent }}
+{% endif %}

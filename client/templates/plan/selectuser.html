@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load tags %}
+
+{% block title %}
+انتخاب یوزر
+{% endblock %}
+{% block script %}
+    <script>
+        function countDown(seconds, elementID){
+            s = seconds % 60;
+            m = Math.floor(seconds / 60);
+            h = Math.floor(m / 60);
+            m = m % 60;
+            d = Math.floor(h / 24);
+            h = h % 24;
+            document.getElementById(elementID).innerHTML = d + " روز و " + h + " ساعت و " + m + " دقیقه و " + s + " ثانیه";
+        }
+
+        {% for user in users %}
+            var s{{ forloop.counter0 }} = {{ user.charge }};
+            setInterval(function(){
+                countDown(s{{ forloop.counter0 }}, 'userCharge{{ forloop.counter0 }}');
+                if (s{{ forloop.counter0 }} > 0 && {{ user.status }} == 0)
+                    s{{ forloop.counter0 }}--;
+                }, 1000)
+        {% endfor %}
+
+        function gatherInfo(){
+            users_checkboxes = document.getElementsByClassName('planuser');
+            form = document.getElementById('selectUserForm');
+
+            for(var i=0; i < users_checkboxes .length; ++i){
+
+                if(users_checkboxes[i].checked){
+                    var input = document.createElement("input");
+                    input.setAttribute("type", "hidden");
+                    input.setAttribute("name", "users[]");
+                    input.setAttribute("value", users_checkboxes[i].id);
+                    form.appendChild(input);
+                }
+            }
+
+        }
+    </script>
+{% endblock %}
+
+{% block main %}
+<div class="main-content">
+    <div class="section__content section__content--p30">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="overview-wrap">
+                        <h2 class="title-5">داشبورد<span>خرید اعتبار</span></h2>
+                        <h2 class="title-5-2">
+                            <span>
+                            <span class="selct"><span class="fa fa-check"></span><a href="#" onclick="window.location.href='/client/plan/list/';">انتخاب بسته /</a></span>
+                            <span class="selct">انتخاب اکانت ها برای شارژ</span>
+                            <span>/ پیش فاکتور و پرداخت</span>
+                            </span>
+                        </h2>
+                        <h2 class="title-5-1">
+                            <li></li>
+                            <span>لطفا اکانت هایی را که مایل به شارژ آنها هستید از لیست زیر انتخاب کنید</span>
+                        </h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <form action="/client/{{ client.id }}/plan/{{ plan.id }}/prepay/" method="POST" onsubmit="gatherInfo()" id="selectUserForm">
+                    {% csrf_token %}
+                    <div class="row">
+                        {% for user in users %}
+                            <div class="col-lg-6  orderplan">
+                                <div class="card acccard">
+                                    <div class="accpart">
+                                        <div class="row2">
+                                            <img src="{{ user.insta_info.profile_pic_url }}" alt="" class="prof">
+                                            <div class="profname">
+                                                <p>{{ user.username }}</p>
+                                                <span><img src="{% static 'images/icon/instamini.png' %}" alt="">{{ user.cid.username }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="accpart lefttimes">
+                                        <span>شارژ باقی مانده:</span><span id="userCharge{{ forloop.counter0 }}">{{ user.charge|get_h_m_s }}</span>
+                                    </div>
+                                    <div class="accpart">
+                                        <div class="col-sm-12">
+                                            <input type="checkbox" class="planuser" id="{{ user.uid }}">
+                                            <label for="{{ user.uid }}" class="col-sm-12">
+                                                <span class="onnn">انتخاب شده</span><span class="offf">انتخاب نشده</span>
+                                                <div style="clear: both;"></div>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+
+                    </div>
+                    {% if users %}
+                        <button type="submit" class="btn btn-primary btn-block">
+                        مشاهده پیش فاکتور و پرداخت
+                        </button>
+                    {% else %}
+                        <a href="/client/{{ request.user.id }}/add/">
+                            <button class="btn btn-primary btn-block">
+                            ابتدا اکانت اینستاگرام خود را اضافه کنید
+                            </button>
+                        </a>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<footer class="settingfooter">
+    <p>کپی رایت © نرم افزار ربات تبلیغات اینستاگرام. تمامی حقوق طراحی و ایده ها محفوظ و هرگونه کپی برداری پیگرد قانونی دارد.</p>
+</footer>
+{% endblock %}

@@ -1,0 +1,19 @@
+<form action="" method="POST">
+    {% csrf_token %}
+    {{ form.from_user.label }} :
+    <select name="from_user" id="id_from_user">
+        {% for item in users %}
+            <option value="{{ item.uid }}">{{ item.username }}</option>
+        {% endfor %}
+    </select> <br>
+    {{ form.to_user.label }} :
+    <select name="to_user" id="id_to_user">
+        {% for item in users %}
+            <option value="{{ item.uid }}">{{ item.username }}</option>
+        {% endfor %}
+    </select> <br>
+    {{ form.days.label }} : {{ form.days }} <br>
+    {{ form.hours.label }} : {{ form.hours }} <br>
+    {{ form.minutes.label }} : {{ form.minutes }} <br>
+    <input type="submit" value="انتقال">
+</form>

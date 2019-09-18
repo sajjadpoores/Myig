@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load tags %}
+{% block title %}
+    گزارش فعالیت
+{% endblock %}
+
+{% block script %}
+    <script>
+        var live_activity = [];
+        {% for item in instagramUser.live_activity.data reversed %}
+            live_activity.push({
+                "username": "{{ item.username }}",
+                "time": "{{ item.time|get_times_ago }}",
+                "pic_url": "{{ item.pic_url }}",
+                "action": "{% if item.action == 'follow' %}فالوو{% elif item.action == 'unfollow' %}آنفالوو{% endif %}" });
+         {% endfor %}
+
+        var show_start_index = 0;
+        var how_many_to_show = 6;
+        function show_items(){
+            insertHere = document.getElementById('insertHere');
+            for( var i=show_start_index; i<how_many_to_show && i<live_activity.length; ++i){
+                var div = document.createElement('div');
+                div.className = 'reportcarddiv col-md-4';
+                div.innerHTML =
+                    `<div class="card reportcard">
+                        <img src="` + live_activity[i].pic_url + `" alt="">
+                            <p>` + live_activity[i].action + `</p>
+                        <span>` + live_activity[i].time + `</span>
+                        <button type="button" class="btn btn-success btn-block" onclick="window.open('https://www.instagram.com/` + live_activity[i].username + `/');">
+                            <span class="fas fa-tv"></span>
+                        </button>
+                    </div>`;
+                insertHere.insertBefore(div, document.getElementById('inserBefore'));
+            }
+        }
+
+        show_items();
+        show_start_index += 3
+
+        function show_more(){
+            show_start_index += 3;
+            how_many_to_show += 3;
+            show_items();
+        }
+    </script>
+{% endblock %}
+{% block main %}
+<div class="main-content">
+    <div class="section__content section__content--p30">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="overview-wrap">
+                        <h2 class="title-5">گزارش فعالیت {{ instagramUser.username }}</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12" id="doneDelete">
+                <div class="row2" id="insertHere">
+                    <div style="width: 100%;padding: 5px;" id="inserBefore">
+                        <button type="button" class="btn btn-primary btn-block" onclick="show_more()">
+                            بیشتر
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    <!-- END MAIN CONTENT-->
+    <!-- END PAGE CONTAINER-->
+    <footer class="settingfooter">
+    <p>کپی رایت © نرم افزار ربات تبلیغات اینستاگرام. تمامی حقوق طراحی و ایده ها محفوظ و هرگونه کپی برداری پیگرد قانونی دارد.</p>
+    </footer>
+{% endblock %}

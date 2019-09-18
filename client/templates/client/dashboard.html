@@ -1,0 +1,405 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load tags %}
+{% block link %}
+    <script>
+        function get_instagram_users_info(username){
+            const Http = new XMLHttpRequest();
+            var url = 'https://instagram.com/' + username;
+            Http.open("GET", url);
+            Http.send();
+            Http.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+
+                    var f = this.response.indexOf('window._sharedData = ');
+                    if(f!=-1){
+                        f += 21;
+                        var output = this.response.substr(f, this.response.indexOf("<\/script>", f) - f - 1);
+                        output = JSON.parse(output);
+                        output = output.entry_data.ProfilePage[0].graphql.user;
+
+                        var pic_url = output.profile_pic_url;
+                        var followers = output.edge_followed_by.count;
+                        var followings = output.edge_follow.count;
+
+                        document.getElementById("pic" + username).src = pic_url;
+                        document.getElementById("followers" + username).innerHTML = followers;
+                        document.getElementById("followings" + username).innerHTML = followings;
+                        var user_link = document.getElementById("link" + username);
+                        user_link.innerHTML = username;
+                        user_link.href = "http://instagram.com/" + username;
+                    }
+                }
+            }
+        }
+    </script>
+{% endblock %}
+{% block script %}
+    <script>
+        function countDown(seconds, elementID){
+            s = seconds % 60;
+            m = Math.floor(seconds / 60);
+            h = Math.floor(m / 60);
+            m = m % 60;
+            d = Math.floor(h / 24);
+            h = h % 24;
+            document.getElementById(elementID).innerHTML = d + " روز و " + h + " ساعت و " + m + " دقیقه و " + s + " ثانیه";
+        }
+
+        var statuses = [];
+        {% for user in users %}
+            var s{{ forloop.counter0 }} = {{ user.charge }};
+            statuses.push({{ user.status }});
+            setInterval(function(){
+                countDown(s{{ forloop.counter0 }}, 'userCharge{{ forloop.counter0 }}');
+                if (s{{ forloop.counter0 }} > 0 && statuses[{{ forloop.counter0 }}] == 0)
+                    s{{ forloop.counter0 }}--;
+                }, 1000)
+        {% endfor %}
+
+        {% if message %}
+        	modal1.style.display = 'block';
+        {% endif %}
+
+
+        {% if tradeMessage %}
+        	modal3.style.display = 'block';
+        {% endif %}
+
+		function startUser(uid, button, statusSpanId, user_index){
+		    parentNode = button.parentNode;
+            statusSpan = document.getElementById(statusSpanId);
+
+			const Http = new XMLHttpRequest();
+			var url;
+			if(parentNode.id == 'on1'){
+				url = '/user/' + uid + '/start/';
+			}
+			else if(parentNode.id == 'off1'){
+				url = '/user/' + uid + '/stop/';
+			}
+
+			Http.open("GET", url);
+			Http.send();
+			Http.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+
+                    if(parentNode.id == 'on1'){
+                        button.innerHTML = 'خاموش کن';
+                        parentNode.id = 'off1';
+                        statusSpan.innerHTML = 'انتظار برای شروع';
+                    }
+                    else if(parentNode.id == 'off1'){
+                        button.innerHTML = 'روشن کن';
+                        parentNode.id = 'on1';
+                        statusSpan.innerHTML = 'خاموش';
+                        statuses[user_index] = 100; // stop the timer
+                    }
+                 }
+			}
+        }
+
+        function startAll(){
+            const Http = new XMLHttpRequest();
+            const url = '/client/{{ request.user.id }}/startall/';
+            Http.open("GET", url);
+            Http.send();
+            Http.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                     location.reload();
+                }
+            }
+        }
+
+        function stopAll(){
+            const Http = new XMLHttpRequest();
+            const url = '/client/{{ request.user.id }}/stopall/';
+            Http.open("GET", url);
+            Http.send();
+            Http.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                     location.reload();
+                }
+            }
+        }
+    </script>
+{% endblock %}
+{% block modal %}
+	<div class="popup" id="all1">
+		<div class="modal1 animation enterinstainfo">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="offscrl1();"><span aria-hidden="true" onclick="offscrl1();">×</span></button>
+					<h4 class="modal-title">اکانت اینستاگرام جدید</h4>
+				</div>
+				<form action="/client/{{ request.user.id }}/add/" method="post">
+					<div class="modal-body">
+
+						{% if message %}
+							<div class="alert alert-danger alert-dismissible" role="alert">
+								<strong>توجه !</strong>
+								<h5 style="display: block">{{ message }}</h5>
+							</div>
+						{% endif %}
+						<div class="alert alert-warning alert-dismissible" role="alert">
+							<strong>اخطار !</strong>
+							<h5>قبل از روشن کردن ربات ، حتما یک ایمیل و شماره موبایل به اکانت اینستاگرام خود اضافه کنید تا در صورت تعویض رمز شما توسط اینستاگرام امکان بازیابی آن وجود داشته باشد .</h5>
+							<h5>لطفا قبل از شروع به کار بخش سوالات متداول و آموزش را مطالعه فرمایید ، مسئولیت کامل عدم رعایت قوانین و تنظیم اشتباه ربات برعهده خودتان می باشد .</h5>
+						</div>
+
+						{% csrf_token %}
+						<div class="form-group">
+							<label>نام کاربری اینستاگرام</label>
+							<input class="au-input au-input--full" type="text" name="username" placeholder="نام کاربری اینستاگرام" required>
+						</div>
+						<div class="form-group">
+							<label>رمز عبور اینستاگرام</label>
+							<input class="au-input au-input--full" type="password" name="password" placeholder="کلمه عبور اینستاگرام" required>
+						</div>
+					</div>
+					<button type="submit" class="btn btn-primary addcmnt">اضافه کن</button>
+				</form>
+			</div>
+		</div>
+	</div>
+	<div class="popup" id="all2">
+		<div class="modal1 animation enterinstainfo">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" onclick="offscrl2();">×</span></button>
+					<h4 class="modal-title">اکانت اینستاگرام جدید</h4>
+				</div>
+				<div class="modal-body">
+					<h4 class="text-primary">
+						<span class="fas fa-check-square"></span>
+						شروع کار</h4>
+					<p>
+						برای شروع کار ابتدا اکانت اینستاگرام خود را با استفاده از دکمه ی اکانت جدید به پنل اضافه بفرمایید.
+						<br>
+						پس از اضافه کردن اکانت
+						<b class="text-success">تست رایگان</b>
+						بلافاصله در صورتی که قبلا اکانت خود را به سایت اضافه نکرده باشید به صورت اتوماتیک فعال می گردد.
+					</p>
+					<h4 class="text-primary"><span class="fas fa-cog"></span>
+						تنظیمات و روشن کردن ربات</h4>
+					<p>
+						پس از دریافت شارژ ، به قسمت تنظیمات رفته و ربات خود را تنظیم فرمایید ، در کنار گزینه های تنظیمات یک علامت سوال قرار گرفته
+						که راهنمای کاملی برای استفاده از آن گزینه هست.
+						حتما توصیه های ایمنی که در داخل قسمت تنظیمات نوشته شده اند را جدی بگیرید.
+						پس از اعمال تنظیمات و ذخیره آن می توانید دکمه روشن کردن ربات را بزنید، معمولا جذب فالوور بعد از ۲ ساعت شروع خواهد شد.
+					</p>
+					<h4 class="text-primary"><span class="fas fa-chart-bar"></span>
+						بهینه سازی و بالابردن بازدهی</h4>
+					<p>
+						در قسمت منوی داشبورد گزینه گزارش گیری و آمار امکانات بسیار پیشرفته و خوبی را برای دستیابی به بهترین نتیجه برای شما فراهم
+						کرده است.
+						یکی از بهترین و کاربردی ترین گزینه ها، بازدهی اهداف است، در این قسمت می توانید بازدهی اهدافی که برای ربات مشخص کرده اید
+						را با هم مقایسه کنید و اهداف ضعیف را حذف کنید، با حذف اهداف ضعیف بازده ربات شما تا ۳۰٪ افزایش خواهد داشت.
+						لطفا توجه کنید بازدهی ربات بیشتر از آنکه با سرعت فعالیت در ارتباط باشد به مرتبط بودن و کیفیت اهداف بستگی دارد.
+					</p>
+					<h4 class="text-primary"><span class="far fa-image"></span>
+						ارسال پست زمان بندی شده</h4>
+					<p>
+						برای این گزینه نیز می توانید از داخل منوی سایت اقدام کنید، شما می توانید
+						برای ۳ ماه آینده صفحه تان برنامه ریزی منظم انجام دهید.
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+    <div class="popup" id="all3">
+            <div class="modal1 animation enterinstainfo">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="offscrl3();"><span aria-hidden="true">×</span></button>
+                        <h4 class="modal-title">جابجایی شارژ بین اکانت ها</h4>
+                    </div>
+                    <form method="POST" action="/client/{{ request.user.id }}/trade/" class="ng-valid ng-dirty ng-valid-parse" id="trade_form">
+                        {% csrf_token %}
+                        <div class="modal-body">
+                                <div class="form-group">
+                                    <label>انتقال شارژ از اکانت</label><br>
+                                    <div class="select-style au-input au-input--full" style="display: block;line-height: 26px;position: static">
+                                        <select name="from_user" style="width: 100%;padding: 2px 0px;">
+                                            {% for user in users %}
+                                                <option value="{{ user.uid }}">{{ user.username }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>به اکانت</label><br>
+                                    <div class="select-style au-input au-input--full" style="display: block;line-height: 26px;position: static">
+                                        <select name="to_user" style="width: 100%;padding: 2px 0px;">
+                                            {% for user in users %}
+                                                <option value="{{ user.uid }}">{{ user.username }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>به میزان</label><br>
+                                    <input class="au-input " type="number" min="0" name="days" placeholder="" value="0"><span class="au-input"
+                                        style="display: inline-block;width: 70px;">روز</span><br>
+                                    <input class="au-input " type="number" min="0" name="hours" placeholder="" value="0"><span class="au-input"
+                                        style="display: inline-block;width: 70px;">ساعت</span><br>
+                                    <input class="au-input " type="number" min="0" name="minutes" placeholder="" value="0"><span class="au-input"
+                                        style="display: inline-block;width: 70px;">دقیقه</span>
+                                </div>
+                        </div>
+                        {% if tradeMessage %}
+                            <div class="alert alert-danger alert-dismissible" role="alert">
+                                {% for error in tradeMessage %}
+                                    <h5><strong>خطا !</strong>{{ error }}</h5>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </form>
+                    <button type="button" class="btn btn-primary addcmnt" onclick="document.getElementById('trade_form').submit()">
+                        انتقال شارژ
+                    </button>
+                </div>
+            </div>
+        </div>
+	<div id="toppage"></div>
+	<a href="#toppage" class="totop"><span class="fa fa-angle-up"></span></a>
+{% endblock %}
+{% block main %}
+<div class="main-content">
+    <div class="section__content section__content--p30">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="overview-wrap">
+                        <h2 class="title-5">داشبورد<span>پنل مدیریت</span></h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <h6 class="text-5">روشن یا خاموش کردن تمامی اکانت ها</h6>
+                                <div class="fifty">
+                                    <button type="button" class="btn btn-primary btn-block" onclick="startAll()">
+                                    همه روشن
+                                    </button>
+                                    <span>{{ on }} اکانت روشن</span>
+                                </div>
+                                <div class="fifty">
+                                    <button type="button" class="btn btn-secondary btn-block" onclick="stopAll()">
+                                    همه خاموش
+                                    </button>
+                                    <span>{{ off }} اکانت خاموش</span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <h6 class="text-5">افزودن اکانت اینستاگرام جدید</h6>
+                                <div class="hundred">
+                                    <button type="button" class="btn btn-primary btn-block" id="adding1" onclick=" modal1.style.display = 'block';">
+                                    اکانت جدید
+                                    </button>
+                                    <span class="spanlink" id="adding2" onclick=" modal2.style.display = 'block';"><span class="far fa-question-circle"></span>راهنمای داشبورد</span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <h6 class="text-5">خرید بسته شارژ</h6>
+                                <div class="hundred">
+                                    <button type="button" class="btn btn-danger col-sm-12" onclick="window.location.href='/client/plan/list/'">
+                                    شارژ حساب کاربری
+                                    </button>
+                                    <span class="spanlink" id="adding3" onclick=" modal3.style.display = 'block';"><span class="far fa-clock"></span>جابجایی شارژ بین اکانت ها</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    {% for user in users %}
+                    <div class="col-lg-4">
+                        <script>get_instagram_users_info("{{ user.username }}");</script>
+                        <div class="card acccard">
+                            <div class="accpart">
+                                <div class="row2">
+                                    <img id="pic{{ user.username }}" src="" alt="" class="prof">
+                                    <div class="profname">
+                                        <p><a id="link{{ user.username }}" href="http://instagram.com/" target="_blank"></a></p>
+                                        <span><img src="{% static 'images/icon/instamini.png' %}" alt="">{{ user.cid.username }}</span>
+                                    </div>
+                                </div>
+                                <input type="checkbox" id="cardaccbtnid{{ forloop.counter }}">
+                                <label class="cardaccbtn" for="cardaccbtnid{{ forloop.counter }}">
+                                <span data-brackets-id="51" class="fa fa-angle-down"></span>
+                                </label>
+                                <div class="cardaccbtnmenu">
+                                    <ul>
+                                        <li><a href="/user/{{ user.uid }}/login/"><span class="fas fa-lock"></span> ورود مجدد </a></li>
+                                        <li><a href="/client/{{ request.user.id }}/post/"><span class="far fa-image"></span> ارسال پست </a></li>
+                                        <li><a href="/user/{{ user.uid }}/chart/"><span class="fas fa-chart-bar"></span> مشاهده آمار </a></li>
+                                        <li><a href="/user/{{ user.uid }}/activity/"><span class="fas fa-file"></span> گزارش فعالیت </a></li>
+                                        <li><a href="/user/{{ user.uid}}/efficiency/"><span class="fas fa-magnet"></span> بازدهی اهداف </a></li>
+                                        <li><a href="/user/{{ user.uid }}/delete/"><span class="fas fa-trash"></span> حذف اکانت </a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="accpart">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p>Followers</p>
+                                        <p id="followers{{ user.username }}"> Loading... </p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p>Following</p>
+                                        <p id="followings{{ user.username }}"> Loading... </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accpart">
+                                <div><span>وضعیت فعالیت ربات:</span><span id="statusSpan{{ forloop.counter0 }}">
+                                    {% if user.status == 0 %} روشن
+                                    {% elif user.status == 100 %} خاموش
+                                    {% elif user.status == -100 %} نیاز به ورود مجدد
+                                    {% elif user.status == 1 %} انتظار برای شروع
+                                    {% elif user.status == -300 %} شارژ یوزر تمام شده است
+                                    {% endif %}
+                                    </span>
+                                </div>
+                                <div><span>شارژ باقی مانده:</span><span id="userCharge{{ forloop.counter0 }}">{{ user.charge|get_h_m_s }}</span></div>
+                            </div>
+                            <div class="accpart">
+                                <div><span>لایک کامنت</span><span>{{ user.json_chart.all.commentsLike }}</span></div>
+                                <div><span>لایک</span><span>{{ user.json_chart.all.like }}</span></div>
+                                <div><span>فالو</span><span>{{ user.json_chart.all.follow }}</span></div>
+                                <div><span>آنفالو</span><span>{{ user.json_chart.all.unfollow }}</span></div>
+                                <div><span>کامنت</span><span>{{ user.json_chart.all.comment }}</span></div>
+                                <div><span>جذب فالوور</span><span>{{ user.json_chart.all.newFollower }}</span></div>
+                                <div><span>دایرکت</span><span>{{ user.json_chart.all.direct }}</span></div>
+                            </div>
+                            <div class="accpart">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <button type="button" class="btn btn-secondary btn-block" onclick="window.location.href= '/user/{{ user.uid }}/setting/edit/';">
+                                        تنظیمات
+                                        </button>
+                                    </div>
+                                    <div class="col-md-6" id="{% if user.status == 0 or user.status == 1 %}off1{% else %}on1{% endif %}">
+                                        <button type="button" class="btn btn-success btn-block" onclick="startUser({{ user.uid }}, this, 'statusSpan{{ forloop.counter0 }}', {{ forloop.counter0 }})">
+                                        {% if user.status == 0 or user.status == 1 %}خاموش کن{% else %}روشن کن{% endif %}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<footer class="settingfooter">
+    <p>کپی رایت © نرم افزار ربات تبلیغات اینستاگرام. تمامی حقوق طراحی و ایده ها محفوظ و هرگونه کپی برداری پیگرد قانونی دارد.</p>
+</footer>
+{% endblock %}

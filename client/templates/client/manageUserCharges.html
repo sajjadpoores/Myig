@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% load tags %}
+{% block title %}
+    مدیریت شارژ کاربران اینستاگرام
+{% endblock %}
+
+{% block script %}
+    <script>
+        function edit_user(user_charge, user_id){
+            var chargeInput = document.getElementById('chargeInput');
+            var idInput = document.getElementById('idInput');
+
+            chargeInput.value = user_charge;
+            idInput.value = user_id;
+        }
+    </script>
+{% endblock %}
+{% block modal %}
+<div class="popup" id="all1">
+    <div class="modal1 animation">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="offscrl1();"><span aria-hidden="true">×</span></button>
+                <h4 class="modal-title">تغییر شارژ کاربر اینستاگرام</h4>
+            </div>
+            <form method="POST" action="/client/usercharges/">
+                <div class="modal-body">
+                    {% csrf_token %}
+                    <label>میزان شارژ</label>
+                    <input type="number" id="chargeInput" name="charge" min="0" class="form-control"><br>
+                    <input type="hidden" id="idInput" name="id" value="-1">
+                </div>
+
+
+                <button type="submit" class="btn btn-primary addcmnt">
+                    ویرایش
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block main %}
+    <div class="main-content">
+        <div class="section__content section__content--p30">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="overview-wrap">
+                            <h2 class="title-5">مدیریت بازاریاب</h2>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-12">
+                    <div class="card sendcontentlist">
+                        <div class="contentposts">
+                            <table>
+                                <tr>
+                                    <th>عملیات</th>
+                                    <th>نام کاربری</th>
+                                    <th>میزان شارژ (به فارسی)</th>
+                                    <th>میزان شارژ (بر حسب ثانیه)</th>
+                                </tr>
+                                {% for usr in instagramUsers %}
+                                    <tr>
+                                        <td>
+                                            <button type="button" class="btn btn-success btn-block" id="adding1" onclick="modal1.style.display = 'block';edit_user({{ usr.charge }}, {{ usr.uid }})">
+                                                <span class="fa fa-pencil-alt"></span>
+                                                ویرایش
+                                            </button>
+                                        </td>
+                                        <td>
+                                            {{ usr.username }}
+                                        </td>
+                                        <td>
+                                            {{ usr.charge|get_h_m_s }}
+                                        </td>
+                                        <td>
+                                            {{ usr.charge }}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END MAIN CONTENT-->
+    <!-- END PAGE CONTAINER-->
+    <footer class="settingfooter">
+        <p>کپی رایت © نرم افزار ربات تبلیغات اینستاگرام. تمامی حقوق طراحی و ایده ها محفوظ و هرگونه کپی برداری پیگرد قانونی دارد.</p>
+    </footer>
+{% endblock %}

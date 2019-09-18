@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load tags %}
+{% block title %}
+    پاسخ به تیکت
+{% endblock %}
+
+{% block main %}
+<div class="main-content">
+    <div class="section__content section__content--p30">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="overview-wrap">
+                        <h2 class="title-5">پیگیری تیکت ها</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card editticket">
+                    <b><span>{{ ticket.sent_time|to_jdatetime }}</span> | <span>{{ ticket.sender.username }}</span></b>
+                    <h5><span>موضوع</span> : <span>{{ ticket.title }}</span></h5>
+                    <span>{{ ticket.text }}</span>
+                    {% if ticket.attachment %}
+                        <img src="{{ ticket.attachment.url }}" />
+                    {% endif %}
+                </div>
+
+            <div class="col-md-12">
+                <div class="card createticket">
+                    <form action="" method="post">
+                        {% csrf_token %}
+                        <label for="tickettext">
+                            متن
+                        </label>
+                        <textarea name="reply" id="tickettext" cols="30" rows="10"></textarea>
+                        {% if error %}
+                            <div class="alert alert-danger alert-dismissible" role="alert">
+                                <strong>توجه !</strong>
+                                <span>{{ error }}</span>
+                            </div>
+                        {% endif %}
+                        <button type="submit" class="btn btn-success">ارسال پاسخ</button>
+                    </form>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+    </div>
+    <!-- END MAIN CONTENT-->
+    <!-- END PAGE CONTAINER-->
+    <footer class="settingfooter">
+    <p>کپی رایت © نرم افزار ربات تبلیغات اینستاگرام. تمامی حقوق طراحی و ایده ها محفوظ و هرگونه کپی برداری پیگرد قانونی دارد.</p>
+    </footer>
+    </div>
+{% endblock %}

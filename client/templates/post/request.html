@@ -1,0 +1,307 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}
+ارسال پست زماندار
+{% endblock %}
+{% block link %}
+<link type="text/css" rel="stylesheet" href="{% static 'vendor/calendar/css/persianDatepicker-default.css' %}" />
+<link href="{% static 'vendor/cropper/cropper.css' %}" rel="stylesheet">
+{% endblock %}
+{% block script %}
+<script type="text/javascript" src="{% static '/vendor/calendar/js/persianDatepicker.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'vendor/cropper/cropper.js' %}"></script>
+<script type="text/javascript">
+    var ratio = 1.91/1;
+   $(function() {
+       $("#id_post_at, #id_span_post_at").persianDatepicker({
+           cellWidth: 32,
+           cellHeight: 35,
+           fontSize: 15,
+       });
+
+        /* SCRIPT TO OPEN THE MODAL WITH THE PREVIEW */
+      $("#id_photo").change(function () {
+        if (this.files && this.files[0]) {
+          var reader = new FileReader();
+          reader.onload = function (e) {
+            $("#image").attr("src", e.target.result);
+            $("#modalCrop").modal("show");
+          }
+          reader.readAsDataURL(this.files[0]);
+        }
+      });
+
+      /* SCRIPTS TO HANDLE THE CROPPER BOX */
+      var $image = $("#image");
+      var cropBoxData;
+      var canvasData;
+      $("#modalCrop").on("shown.bs.modal", function () {
+
+        $image.cropper({
+          viewMode: 1,
+          aspectRatio: ratio,
+          minCropBoxWidth: 320,
+          maxCropBoxWidth: 1080,
+          minCropBoxHeight: 567,
+          maxCropBoxHeight: 1920,
+          ready: function () {
+            $image.cropper("setCanvasData", canvasData);
+            $image.cropper("setCropBoxData", cropBoxData);
+          }
+        });
+      }).on("hidden.bs.modal", function () {
+        cropBoxData = $image.cropper("getCropBoxData");
+        canvasData = $image.cropper("getCanvasData");
+        $image.cropper("destroy");
+      });
+
+      $(".js-zoom-in").click(function () {
+        $image.cropper("zoom", 0.1);
+      });
+
+      $(".js-zoom-out").click(function () {
+        $image.cropper("zoom", -0.1);
+      });
+
+      /* SCRIPT TO COLLECT THE DATA AND MAKE IT READY TO SEND TO THE SERVER */
+      $(".js-crop-and-upload").click(function () {
+        var cropData = $image.cropper("getData");
+        $("#id_x").val(cropData["x"]);
+        $("#id_y").val(cropData["y"]);
+        $("#id_height").val(cropData["height"]);
+        $("#id_width").val(cropData["width"]);
+        // $("#formUpload").submit();
+        $("#cancelModal").click()
+      });
+
+   });
+</script>
+<script>
+    function removeItem(node){
+        var select = document.getElementById('id_user');
+        var option = document.createElement("option");
+        option.value = node.parentNode.childNodes[2].id;
+        option.innerHTML = node.parentNode.childNodes[2].innerHTML;
+        select.add(option);
+        node.parentNode.parentNode.removeChild(node.parentNode);
+    }
+
+    function addItem(node){
+        var addItemHere = document.getElementById('addItemHere');
+        var div = document.createElement('div');
+        div.setAttribute('class', 'selectize-dropdown-content');
+        div.innerHTML = `<span class="fa fa-times" onclick="removeItem(this)"></span>
+        <div class="option active" id="` + node.value + `">` + node.innerHTML + `</div> `
+        addItemHere.appendChild(div);
+        node.parentNode.selectedIndex = 0;
+        node.parentNode.removeChild(node);
+    }
+
+    function gather_info(){
+        var form = document.getElementById('sendPostForm');
+        var container = document.getElementById('addItemHere');
+        var items = document.getElementsByClassName('option active');
+        for(var i=0; i<items.length; ++i){
+            var input = document.createElement("input");
+            input.setAttribute("type", "hidden");
+            input.setAttribute("name", "users[]");
+            input.setAttribute("value", items[i].id);
+            form.appendChild(input);
+        }
+    }
+
+    function set_ratio(){
+        var mode = document.getElementById('id_mode');
+        if(mode.options[mode.selectedIndex].value == '0'){ // story
+            ratio = 9/16;
+        }
+        else{
+            var ratio_select = document.getElementById('ratio');
+            if (ratio_select.options[ratio_select.selectedIndex].value == '0')
+                ratio = 1.91/1;
+            else if(ratio_select.options[ratio_select.selectedIndex].value == '1')
+                ratio = 4/5;
+             else if(ratio_select.options[ratio_select.selectedIndex].value == '2')
+                ratio = 1/1;
+        }
+    }
+    function switch_mode(){
+        var mode = document.getElementById('id_mode');
+        var caption = document.getElementById('id_caption')
+        var ratio_div = document.getElementById('ratio_div');
+
+        if(mode.options[mode.selectedIndex].value == '0'){ // story
+            caption.disabled = true;
+            ratio_div.style.display = 'none';
+            set_ratio()
+        }
+        else{ // post
+            caption.disabled = false;
+            ratio_div.style.display = 'block';
+            set_ratio()
+        }
+    }
+    switch_mode();
+</script>
+{% endblock %}
+{% block modal %}
+<!-- MODAL TO CROP THE IMAGE -->
+<div class="modal fade" id="modalCrop">
+   <div class="modal-dialog">
+      <div class="modal-content">
+         <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+            <h4 class="modal-title">برش تصویر</h4>
+         </div>
+         <div class="modal-body">
+            <img src="" id="image" style="max-width: 100%;">
+         </div>
+         <div class="modal-footer">
+            <div class="btn-group pull-left" role="group">
+               <button type="button" class="btn btn-default js-zoom-in">
+               <span class="fas fa-search-plus"></span>
+               </button>
+               <button type="button" class="btn btn-default js-zoom-out">
+               <span class="fas fa-search-minus"></span>
+               </button>
+            </div>
+            <button type="button" class="btn btn-default" data-dismiss="modal" id="cancelModal">انصراف</button>
+            <button type="button" class="btn btn-primary js-crop-and-upload">برش</button>
+         </div>
+      </div>
+   </div>
+</div>
+
+<div class="modal fade" id="modal-progress" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Uploading...</h4>
+      </div>
+      <div class="modal-body">
+        <div class="progress">
+          <div class="progress-bar" role="progressbar" style="width: 0%;">0%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+{% block main %}
+<div class="main-content">
+   <div class="section__content section__content--p30">
+      <div class="container-fluid">
+         <div class="row">
+            <div class="col-md-12">
+               <div class="overview-wrap">
+                  <h2 class="title-5">ارسال جدید</h2>
+               </div>
+            </div>
+         </div>
+         <div class="col-md-12">
+            <div class="card addpostpage">
+               <div class="content">
+                  <div class="panel panel-primary">
+                     <div class="panel-heading"></div>
+                     <div class="panel-body">
+                        <div class="ng-scope">
+                           <div class="ng-scope">
+                              <form method="post" enctype="multipart/form-data" id="sendPostForm" class="ng-pristine ng-valid" onsubmit="gather_info()">
+                                 {% csrf_token %}
+                                 <div class="form-group">
+                                    <label>نوع ارسال:</label>
+                                    <select name="mode" id="id_mode" onchange="switch_mode()">
+                                       <option value="0">استوری</option>
+                                       <option value="1">پست</option>
+                                    </select>
+                                 </div>
+                                 <div class="form-group accountlist">
+                                    <label>اکانت ها:</label>
+                                    <select id="id_user" onchange="addItem(this.options[this.selectedIndex])">
+                                        <option value="0">----------</option>
+                                       {% for user in users %}
+                                       <option value="{{ user.uid }}">{{ user.username }}</option>
+                                       {% endfor %}
+                                    </select>
+                                    <div>
+                                       <div class="selectize-control">
+                                          <div class="selectize-dropdown multi" id="addItemHere">
+
+                                          </div>
+                                       </div>
+                                    </div>
+                                 </div>
+                                 <label class="ng-scope">فایل:</label>
+                                 <div class="row">
+                                 </div>
+
+                                  <div class="form-group" id="ratio_div">
+                                    <label>نوع تصویر:</label>
+                                    <select id="ratio" onchange="set_ratio()">
+                                        <option value="0">افقی</option>
+                                        <option value="1">عمودی</option>
+                                        <option value="2">مربعی</option>
+                                    </select>
+                                 </div>
+
+                                 <div class="fileuploading">
+                                    <input  name="photo" id="id_photo" type="file" style="display: none">
+                                    <label for="id_photo" class="btn btn-primary">انتخاب عکس</label>
+                                    <input  name="video" id="id_video" type="file" style="display: none" disabled>
+                                    <label for="id_video" class="btn btn-primary">انتخاب فایل</label>
+                                     <input type="hidden" name="x" id="id_x">
+                                     <input type="hidden" name="y" id="id_y">
+                                     <input type="hidden" name="width" id="id_width">
+                                     <input type="hidden" name="height" id="id_height">
+                                 </div>
+                                 <div class="form-group ng-scope">
+                                    <label>متن</label>
+                                    <textarea name="caption" id="id_caption" class="form-control ng-pristine ng-untouched ng-valid ng-empty" rows="5" style="max-height: 200px;min-height: 100px;"></textarea>
+                                 </div>
+                                 <label style="display: block">زمان بندی:</label>
+                                 <div class="checkbox">
+                                    <input type="checkbox" id="addFormtimedid" class="ng-pristine ng-untouched ng-valid ng-empty addFormtimedcheck"><label for="addFormtimedid">ارسال با زمان بندی</label>
+                                    <div class="ng-scope addFormtimed">
+                                       <label>تاریخ:</label>
+                                       <div class="input-group input-group-lg" style="max-width: 367px;">
+                                          <input name="post_date" type="text" class="form-control" id="id_post_at" name="date">
+                                          <span id="id_span_post_at"></span>
+                                       </div>
+                                       <br>
+                                       <label>دقیقه و ساعت:</label>
+                                       <div class="input-group input-group-lg settime" style="max-width: 367px;">
+                                          <input type="number" name="post_m" class="form-control ng-pristine ng-untouched ng-valid ng-empty" value="0" placeholder="دقیقه" min="0" max="59">
+                                          <span class="input-group-addon" id="sizing-addon1">:</span>
+                                          <input type="number" name="post_h" class="form-control ng-pristine ng-untouched ng-valid ng-empty" value="0" placeholder="ساعت" min="0" max="23">
+                                       </div>
+                                    </div>
+                                 </div>
+                                 <br>
+                                 <div class="form-group">
+                                    <label>هزینه ارسال:</label>
+                                    <div class="text-success ng-scope">
+                                       رایگان
+                                    </div>
+                                    <br>
+                                 </div>
+                                 <button type="submit" class="btn btn-primary">ارسال</button>
+                              </form>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+
+<footer class="settingfooter">
+   <p>کپی رایت © نرم افزار ربات تبلیغات اینستاگرام. تمامی حقوق طراحی و ایده ها محفوظ و هرگونه کپی برداری پیگرد قانونی دارد.</p>
+</footer>
+{% endblock %}
+

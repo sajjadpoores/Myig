@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load tags %}
+{% block title %}
+    پاسخ به تیکت
+{% endblock %}
+
+{% block main %}
+<div class="main-content">
+    <div class="section__content section__content--p30">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="overview-wrap">
+                        <h2 class="title-5">پیگیری تیکت ها</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card editticket">
+                <b><span>{{ ticket.sent_time|to_jdatetime }}</span> | <span>{{ ticket.sender.username }}</span></b>
+                <h5><span>موضوع</span> : <span>{{ ticket.title }}</span></h5>
+                <span>{{ ticket.text }}</span>
+                {% if ticket.attachment %}
+                    <a href="{{ ticket.attachment.url }}"><img src="{{ ticket.attachment.url }}" /></a>
+                {% endif %}
+            </div>
+
+            <div class="card editticket">
+                {% if ticket.replied %}
+                        <b><span>{{ ticket.replied_time|to_jdatetime }}</span> | <span>Admin</span></b>
+                        <span>{{ ticket.reply }}</span>
+                 {% else %}
+                        <span>پاسخی فرستاده نشده است.</span>
+                {% endif %}
+                {% if request.user.is_staff %}
+                    <button class="btn btn-success" onclick="window.location.href='/ticket/{{ ticket.id }}/reply/';">ارسال پاسخ</button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+    <footer class="settingfooter">
+    <p>کپی رایت © نرم افزار ربات تبلیغات اینستاگرام. تمامی حقوق طراحی و ایده ها محفوظ و هرگونه کپی برداری پیگرد قانونی دارد.</p>
+    </footer>
+    </div>
+{% endblock %}

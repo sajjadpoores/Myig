@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    ایجاد تیکت جدید
+{% endblock %}
+
+{% block main %}
+<div class="main-content">
+    <div class="section__content section__content--p30">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="overview-wrap">
+                        <h2 class="title-5">ارسال جدید</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="card createticket">
+                    <div class="alert alert-info alert-dismissible" role="alert">
+                        <strong>توجه !</strong>
+                        <p>لطفا از ارسال پیام های کوتاه و پشت سر هم خودداری فرمایید. لطفا سوال یا مشکل خود را به صورت دقیق و کامل بیان کنید تا فرایند پشتیبانی با سرعت بیشتری انجام پذیرد.</p>
+                    </div>
+                    <form action="" method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <label for="ticketname">
+                            موضوع تیکت
+                        </label>
+                        <input type="text" id="ticketname" name="title">
+                        <label for="tickettext">
+                            متن
+                        </label>
+                        <textarea name="text" id="tickettext"  cols="30" rows="10"></textarea>
+                        <label for="uploadticket">
+                            پیوست (فقط تصویر)
+                        </label>
+                        <div><input type="file" id="uploadticket" name="attachment"></div>
+                        <button type="submit" class="btn btn-success">ارسال تیکت جدید</button>
+                    </form>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END MAIN CONTENT-->
+<!-- END PAGE CONTAINER-->
+<footer class="settingfooter">
+    <p>کپی رایت © نرم افزار ربات تبلیغات اینستاگرام. تمامی حقوق طراحی و ایده ها محفوظ و هرگونه کپی برداری پیگرد قانونی دارد.</p>
+</footer>
+{% endblock %}
